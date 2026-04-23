@@ -50,15 +50,15 @@ graph TD
     classDef gitAnchor fill:#2f855a,stroke:#68d391,stroke-width:2px,color:#fff;
     classDef memPath fill:#b83280,stroke:#f687b3,stroke-width:2px,color:#fff;
 
-    Terminal[启动路径: /src/api/handlers]:::folder -->|向上追溯| Parent1[/src]:::folder
-    Parent1 -->|向上追溯| Root[项目根目录: /my-web3-project]:::folder
+    Terminal["启动路径: /src/api/handlers"]:::folder -->|向上追溯| Parent1["/src"]:::folder
+    Parent1 -->|向上追溯| Root["项目根目录: /my-web3-project"]:::folder
     
     Root -.->|寻址命中| GitNode[.git 隐藏文件夹]:::gitAnchor
     
-    GitNode ==>|路径转义映射| StorePath[统一挂载点: ~/.claude/projects/-my-web3-project/memory/]:::memPath
+    GitNode ==>|路径转义映射| StorePath["统一挂载点: ~/.claude/projects/-my-web3-project/memory/"]:::memPath
     
-    StorePath --> IndexFile[MEMORY.md (全局索引)]:::memPath
-    StorePath --> Fragment[其它记忆片段 (.md)]:::memPath
+    StorePath --> IndexFile["MEMORY.md (全局索引)"]:::memPath
+    StorePath --> Fragment["其它记忆片段 (.md)"]:::memPath
 ```
 
 * **技术原理**：当你在任何子目录执行 `claude` 命令时，程序不仅会读取当前目录（`cwd`），而是会递归向上遍历父目录。一旦它探测到某一层存在 `.git` 文件夹，就会立即将该层级认定为**“项目的物理根边界”**。
