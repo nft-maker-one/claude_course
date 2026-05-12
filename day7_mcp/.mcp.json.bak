@@ -1,0 +1,20 @@
+{
+    "mcpServers": {
+        "tradingview": {
+            "command": "uvx",
+            "args": ["--from", "tradingview-mcp-server", "tradingview-mcp"]
+        },
+        "image-processor": {
+            "type": "stdio",
+            "command": "python",
+            "args": [
+                "/home/jerry/Desktop/data/claude_tutorial_prepare/image_mcp/server.py"
+            ]
+        },
+        "math-mcp": {
+            "type": "http",
+            "url":"http://localhost:8000/mcp",
+            "description":"used for math calculation add,subtract and sqrt"
+        }
+    }
+}
