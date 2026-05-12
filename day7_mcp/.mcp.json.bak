@@ -8,7 +8,7 @@
             "type": "stdio",
             "command": "python",
             "args": [
-                "/home/jerry/Desktop/data/claude_tutorial_prepare/image_mcp/server.py"
+                "/home/jerry/Desktop/data/claude_course/day7_mcp/image_mcp/server.py"
             ]
         },
         "math-mcp": {

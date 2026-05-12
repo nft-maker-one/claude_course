@@ -132,6 +132,9 @@ sequenceDiagram
 我们将引入 TradingView MCP 负责金融时间序列数据的高频拉取，并使用 Notion MCP 处理结构化数据的云端入库。由于这类开源包依赖复杂的 Python 环境，我们利用 `uvx` (基于 uv 的极速虚拟环境运行工具) 来实现配置的幂等性与隔离：
 
 写入项目的 `.mcp.json`：
+```bash
+pip install tradingview-mcp-server
+```
 
 ```json
 {
