@@ -1,0 +1,1 @@
+console.log('8   8  888   888  8  8'); console.log('8   8 8   8 8   8 8 8 '); console.log('88888 8   8 8   8 88  '); console.log('8   8 8   8 8   8 8 8 '); console.log('8   8  888   888  8  8');
