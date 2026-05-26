@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pomodoro Multi-Clock</title>
+<style>
+  :root {
+    --bg: #0f0f13;
+    --surface: #1a1a24;
+    --border: #2a2a3a;
+    --text: #e8e8f0;
+    --muted: #666680;
+    --accent: #7c6af7;
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    padding: 32px 20px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #7c6af7, #f76ac8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  header p {
+    color: var(--muted);
+    margin-top: 6px;
+    font-size: 0.9rem;
+  }
+
+  .toolbar {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 10px 22px;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .btn-primary:hover { background: #6a58e0; transform: translateY(-1px); }
+
+  .btn-ghost {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .btn-ghost:hover { background: var(--border); }
+
+  .clocks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .clock-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 24px;
+    border: 1px solid var(--border);
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .clock-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+
+  .clock-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .clock-name {
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    outline: none;
+    width: 100%;
+    max-width: 180px;
+  }
+
+  .clock-name:focus {
+    border-bottom: 1px solid var(--accent);
+  }
+
+  .delete-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 4px;
+    border-radius: 6px;
+    transition: color 0.2s, background 0.2s;
+    line-height: 1;
+  }
+
+  .delete-btn:hover { color: #ff6b6b; background: rgba(255,107,107,0.1); }
+
+  /* SVG ring */
+  .ring-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  .ring-wrap svg { transform: rotate(-90deg); }
+
+  .ring-bg { fill: none; stroke: var(--border); stroke-width: 8; }
+
+  .ring-fg {
+    fill: none;
+    stroke-width: 8;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s linear, stroke 0.5s;
+  }
+
+  .ring-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+
+  .ring-time {
+    font-size: 2.2rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -1px;
+  }
+
+  .ring-phase {
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .phase-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .phase-tab {
+    flex: 1;
+    padding: 6px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .phase-tab.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(124,106,247,0.1);
+  }
+
+  .controls {
+    display: flex;
+    gap: 8px;
+  }
+
+  .ctrl-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .ctrl-start {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .ctrl-start:hover { background: #6a58e0; }
+
+  .ctrl-reset {
+    background: var(--border);
+    color: var(--text);
+  }
+
+  .ctrl-reset:hover { background: #3a3a50; }
+
+  /* Session dots */
+  .sessions {
+    display: flex;
+    gap: 5px;
+    margin-top: 14px;
+    justify-content: center;
+  }
+
+  .session-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: background 0.3s;
+  }
+
+  .session-dot.done { background: var(--accent); }
+
+  /* Color states for time ring */
+  .color-green { color: #4ade80; }
+  .color-yellow { color: #facc15; }
+  .color-orange { color: #fb923c; }
+  .color-red { color: #f87171; }
+
+  /* Pulse animation when running */
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(124,106,247,0); }
+    50% { box-shadow: 0 0 0 6px rgba(124,106,247,0.15); }
+  }
+
+  .clock-card.running {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+    grid-column: 1 / -1;
+  }
+
+  .empty-state span { font-size: 3rem; display: block; margin-bottom: 12px; }
+
+  /* Duration editor */
+  .duration-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 10px;
+    align-items: center;
+  }
+
+  .dur-field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .dur-label {
+    font-size: 0.6rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .dur-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: center;
+    padding: 4px 2px;
+    outline: none;
+    -moz-appearance: textfield;
+  }
+
+  .dur-input::-webkit-outer-spin-button,
+  .dur-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  .dur-input:focus { border-color: var(--accent); }
+
+  .dur-sep {
+    color: var(--border);
+    font-size: 0.8rem;
+    align-self: flex-end;
+    padding-bottom: 4px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Pomodoro Multi-Clock</h1>
+  <p>Run multiple focus sessions simultaneously with color-coded urgency</p>
+</header>
+
+<div class="toolbar">
+  <button class="btn btn-primary" onclick="addClock()">+ Add Clock</button>
+  <button class="btn btn-ghost" onclick="startAll()">▶ Start All</button>
+  <button class="btn btn-ghost" onclick="pauseAll()">⏸ Pause All</button>
+  <button class="btn btn-ghost" onclick="resetAll()">↺ Reset All</button>
+</div>
+
+<div class="clocks-grid" id="grid">
+  <div class="empty-state" id="empty">
+    <span>⏱</span>
+    Click <strong>+ Add Clock</strong> to begin a Pomodoro session
+  </div>
+</div>
+
+<script>
+const PHASE_META = {
+  focus:       { label: 'FOCUS',       color: '#7c6af7', defaultMin: 25 },
+  short_break: { label: 'SHORT BREAK', color: '#4ade80', defaultMin: 5  },
+  long_break:  { label: 'LONG BREAK',  color: '#38bdf8', defaultMin: 15 },
+};
+
+let clocks = [];
+let idCounter = 0;
+
+function colorForRatio(ratio) {
+  // ratio = remaining / total  (1 = full, 0 = done)
+  if (ratio > 0.6) return '#4ade80';   // green
+  if (ratio > 0.35) return '#facc15';  // yellow
+  if (ratio > 0.15) return '#fb923c';  // orange
+  return '#f87171';                     // red
+}
+
+function textColorClass(ratio) {
+  if (ratio > 0.6) return 'color-green';
+  if (ratio > 0.35) return 'color-yellow';
+  if (ratio > 0.15) return 'color-orange';
+  return 'color-red';
+}
+
+function formatTime(s) {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+
+function addClock(name = null) {
+  const id = ++idCounter;
+  const clock = {
+    id,
+    name: name || `Pomodoro ${id}`,
+    phase: 'focus',
+    durations: { focus: 25, short_break: 5, long_break: 15 },
+    remaining: 25 * 60,
+    running: false,
+    interval: null,
+    sessions: 0,
+  };
+  clocks.push(clock);
+  renderAll();
+}
+
+function totalFor(clock, phase) {
+  return clock.durations[phase] * 60;
+}
+
+function setDuration(id, phase, minutes) {
+  const clock = clocks.find(c => c.id === id);
+  if (!clock) return;
+  const mins = Math.max(1, Math.min(999, parseInt(minutes) || 1));
+  clock.durations[phase] = mins;
+  if (clock.phase === phase) {
+    clearInterval(clock.interval);
+    clock.interval = null;
+    clock.running = false;
+    clock.remaining = mins * 60;
+    const card = document.querySelector(`.clock-card[data-id="${id}"]`);
+    if (card) updateCard(card, clock);
+  }
+}
+
+function renderAll() {
+  const grid = document.getElementById('grid');
+  const empty = document.getElementById('empty');
+
+  if (clocks.length === 0) {
+    if (!document.getElementById('empty')) {
+      const e = document.createElement('div');
+      e.id = 'empty';
+      e.className = 'empty-state';
+      e.innerHTML = '<span>⏱</span>Click <strong>+ Add Clock</strong> to begin a Pomodoro session';
+      grid.appendChild(e);
+    }
+    empty && (empty.style.display = '');
+    return;
+  }
+
+  empty && (empty.style.display = 'none');
+
+  // Remove cards for deleted clocks
+  document.querySelectorAll('.clock-card').forEach(card => {
+    if (!clocks.find(c => c.id == card.dataset.id)) card.remove();
+  });
+
+  clocks.forEach(clock => {
+    let card = document.querySelector(`.clock-card[data-id="${clock.id}"]`);
+    if (!card) {
+      card = buildCard(clock);
+      grid.appendChild(card);
+    }
+    updateCard(card, clock);
+  });
+}
+
+function buildCard(clock) {
+  const R = 80, C = R + 10, circumference = 2 * Math.PI * R;
+  const card = document.createElement('div');
+  card.className = 'clock-card';
+  card.dataset.id = clock.id;
+
+  card.innerHTML = `
+    <div class="clock-header">
+      <input class="clock-name" type="text" value="${clock.name}"
+        onchange="renameClock(${clock.id}, this.value)" />
+      <button class="delete-btn" onclick="deleteClock(${clock.id})" title="Remove">✕</button>
+    </div>
+
+    <div class="phase-tabs">
+      <button class="phase-tab ${clock.phase === 'focus' ? 'active' : ''}"
+        onclick="switchPhase(${clock.id},'focus')">Focus</button>
+      <button class="phase-tab ${clock.phase === 'short_break' ? 'active' : ''}"
+        onclick="switchPhase(${clock.id},'short_break')">Short</button>
+      <button class="phase-tab ${clock.phase === 'long_break' ? 'active' : ''}"
+        onclick="switchPhase(${clock.id},'long_break')">Long</button>
+    </div>
+
+    <div class="duration-row">
+      <div class="dur-field">
+        <span class="dur-label">Focus</span>
+        <input class="dur-input" type="number" min="1" max="999"
+          value="${clock.durations.focus}"
+          onchange="setDuration(${clock.id},'focus',this.value)"
+          title="Focus duration in minutes" />
+      </div>
+      <div class="dur-sep">min</div>
+      <div class="dur-field">
+        <span class="dur-label">Short</span>
+        <input class="dur-input" type="number" min="1" max="999"
+          value="${clock.durations.short_break}"
+          onchange="setDuration(${clock.id},'short_break',this.value)"
+          title="Short break duration in minutes" />
+      </div>
+      <div class="dur-sep">min</div>
+      <div class="dur-field">
+        <span class="dur-label">Long</span>
+        <input class="dur-input" type="number" min="1" max="999"
+          value="${clock.durations.long_break}"
+          onchange="setDuration(${clock.id},'long_break',this.value)"
+          title="Long break duration in minutes" />
+      </div>
+      <div class="dur-sep">min</div>
+    </div>
+
+    <div class="ring-wrap">
+      <svg width="${C*2}" height="${C*2}" viewBox="0 0 ${C*2} ${C*2}">
+        <circle class="ring-bg" cx="${C}" cy="${C}" r="${R}" />
+        <circle class="ring-fg" cx="${C}" cy="${C}" r="${R}"
+          stroke-dasharray="${circumference}"
+          stroke-dashoffset="0"
+          data-circ="${circumference}" />
+      </svg>
+      <div class="ring-label">
+        <div class="ring-time" data-time></div>
+        <div class="ring-phase" data-phase></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="ctrl-btn ctrl-start" data-start onclick="toggleClock(${clock.id})">▶ Start</button>
+      <button class="ctrl-btn ctrl-reset" onclick="resetClock(${clock.id})">↺ Reset</button>
+    </div>
+
+    <div class="sessions" data-sessions></div>
+  `;
+
+  return card;
+}
+
+function updateCard(card, clock) {
+  const total = totalFor(clock, clock.phase);
+  const ratio = clock.remaining / total;
+  const circumference = parseFloat(card.querySelector('.ring-fg').dataset.circ);
+  const offset = circumference * (1 - ratio);
+  const color = colorForRatio(ratio);
+  const textClass = textColorClass(ratio);
+
+  // Ring
+  const fg = card.querySelector('.ring-fg');
+  fg.style.strokeDashoffset = offset;
+  fg.style.stroke = clock.remaining === total ? PHASE_META[clock.phase].color : color;
+
+  // Time label
+  const timeEl = card.querySelector('[data-time]');
+  timeEl.textContent = formatTime(clock.remaining);
+  timeEl.className = `ring-time ${clock.remaining < total ? textClass : ''}`;
+
+  // Phase label
+  card.querySelector('[data-phase]').textContent = PHASE_META[clock.phase].label;
+
+  // Phase tabs
+  card.querySelectorAll('.phase-tab').forEach(tab => tab.classList.remove('active'));
+  const activeTab = [...card.querySelectorAll('.phase-tab')]
+    .find(t => t.getAttribute('onclick').includes(`'${clock.phase}'`));
+  if (activeTab) activeTab.classList.add('active');
+
+  // Start button
+  const startBtn = card.querySelector('[data-start]');
+  startBtn.textContent = clock.running ? '⏸ Pause' : '▶ Start';
+
+  // Running state
+  card.classList.toggle('running', clock.running);
+
+  // Sessions dots (up to 4 per cycle)
+  const sessEl = card.querySelector('[data-sessions]');
+  sessEl.innerHTML = '';
+  for (let i = 0; i < 4; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'session-dot' + (i < clock.sessions % 4 ? ' done' : '');
+    sessEl.appendChild(dot);
+  }
+}
+
+function toggleClock(id) {
+  const clock = clocks.find(c => c.id === id);
+  if (!clock) return;
+
+  if (clock.running) {
+    clearInterval(clock.interval);
+    clock.interval = null;
+    clock.running = false;
+  } else {
+    clock.running = true;
+    clock.interval = setInterval(() => tick(id), 1000);
+  }
+  const card = document.querySelector(`.clock-card[data-id="${id}"]`);
+  if (card) updateCard(card, clock);
+}
+
+function tick(id) {
+  const clock = clocks.find(c => c.id === id);
+  if (!clock) return;
+
+  clock.remaining--;
+
+  if (clock.remaining <= 0) {
+    if (clock.phase === 'focus') {
+      clock.sessions++;
+      clock.phase = clock.sessions % 4 === 0 ? 'long_break' : 'short_break';
+    } else {
+      clock.phase = 'focus';
+    }
+    clock.remaining = totalFor(clock, clock.phase);
+    notify(clock);
+  }
+
+  const card = document.querySelector(`.clock-card[data-id="${id}"]`);
+  if (card) updateCard(card, clock);
+}
+
+function notify(clock) {
+  const msg = clock.phase === 'focus'
+    ? `${clock.name}: Break over — focus time!`
+    : `${clock.name}: Focus done — take a break!`;
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification('Pomodoro', { body: msg });
+  }
+}
+
+function resetClock(id) {
+  const clock = clocks.find(c => c.id === id);
+  if (!clock) return;
+  clearInterval(clock.interval);
+  clock.interval = null;
+  clock.running = false;
+  clock.remaining = totalFor(clock, clock.phase);
+  const card = document.querySelector(`.clock-card[data-id="${id}"]`);
+  if (card) updateCard(card, clock);
+}
+
+function switchPhase(id, phase) {
+  const clock = clocks.find(c => c.id === id);
+  if (!clock) return;
+  clearInterval(clock.interval);
+  clock.interval = null;
+  clock.running = false;
+  clock.phase = phase;
+  clock.remaining = totalFor(clock, phase);
+  const card = document.querySelector(`.clock-card[data-id="${id}"]`);
+  if (card) updateCard(card, clock);
+}
+
+function renameClock(id, name) {
+  const clock = clocks.find(c => c.id === id);
+  if (clock) clock.name = name;
+}
+
+function deleteClock(id) {
+  const clock = clocks.find(c => c.id === id);
+  if (clock) clearInterval(clock.interval);
+  clocks = clocks.filter(c => c.id !== id);
+  renderAll();
+}
+
+function startAll() {
+  clocks.forEach(c => { if (!c.running) toggleClock(c.id); });
+}
+
+function pauseAll() {
+  clocks.forEach(c => { if (c.running) toggleClock(c.id); });
+}
+
+function resetAll() {
+  clocks.forEach(c => resetClock(c.id));
+}
+
+// Request notification permission
+if ('Notification' in window && Notification.permission === 'default') {
+  Notification.requestPermission();
+}
+
+// Start with two clocks by default
+addClock('Deep Work');
+addClock('Review');
+</script>
+</body>
+</html>
