@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>铁路订票 — RailPass</title>
+  <style>
+    :root {
+      --bg: #0a0e1a;
+      --surface-1: #111827;
+      --surface-2: #1a2235;
+      --surface-3: #1e2d42;
+      --accent: #3b82f6;
+      --accent-glow: rgba(59, 130, 246, 0.25);
+      --accent-2: #06b6d4;
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #475569;
+      --border: rgba(148, 163, 184, 0.1);
+      --border-accent: rgba(59, 130, 246, 0.35);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      --duration-fast: 150ms;
+      --duration-normal: 280ms;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Background mesh ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% 10%, rgba(59,130,246,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(6,182,212,0.06) 0%, transparent 55%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Header ── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 14, 26, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 clamp(1rem, 5vw, 3rem);
+    }
+
+    nav {
+      max-width: 1200px;
+      margin: 0 auto;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      padding: 6px 14px;
+      border-radius: 6px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color var(--duration-fast), background var(--duration-fast);
+    }
+
+    .nav-links a:hover { color: var(--text-primary); background: rgba(255,255,255,0.05); }
+    .nav-links a.active { color: var(--accent); }
+
+    .nav-cta {
+      padding: 8px 18px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: opacity var(--duration-fast), transform var(--duration-fast);
+    }
+
+    .nav-cta:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    /* ── Hero search panel ── */
+    .hero {
+      position: relative;
+      z-index: 1;
+      padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 5vw, 3rem) clamp(2rem, 5vw, 4rem);
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      background: rgba(59,130,246,0.1);
+      border: 1px solid var(--border-accent);
+      border-radius: 99px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #f1f5f9 30%, var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      margin-bottom: 3rem;
+    }
+
+    /* ── Search card ── */
+    .search-card {
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.03);
+    }
+
+    /* Trip type tabs */
+    .trip-tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--surface-2);
+      border-radius: var(--radius-sm);
+      padding: 4px;
+      width: fit-content;
+      margin-bottom: 1.75rem;
+    }
+
+    .trip-tab {
+      padding: 7px 20px;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      background: transparent;
+      color: var(--text-secondary);
+      transition: all var(--duration-fast);
+    }
+
+    .trip-tab.active {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 2px 12px var(--accent-glow);
+    }
+
+    /* Form grid */
+    .search-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 1.25rem;
+    }
+
+    @media (max-width: 640px) {
+      .search-grid { grid-template-columns: 1fr; }
+      .swap-btn { transform: rotate(90deg); margin: 0 auto; }
+    }
+
+    .field-group { display: flex; flex-direction: column; gap: 6px; }
+
+    label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+
+    .field-inner {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .field-icon {
+      position: absolute;
+      left: 14px;
+      color: var(--text-muted);
+      font-size: 16px;
+      pointer-events: none;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    select {
+      width: 100%;
+      padding: 13px 14px 13px 42px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color var(--duration-fast), box-shadow var(--duration-fast);
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    input[type="text"]::placeholder,
+    select option[value=""] { color: var(--text-muted); }
+
+    input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    /* City input autocomplete hint */
+    .city-hint {
+      position: absolute;
+      right: 12px;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      background: var(--surface-3);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* Swap button */
+    .swap-btn {
+      width: 40px;
+      height: 40px;
+      margin-top: 24px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: background var(--duration-fast), transform var(--duration-fast), border-color var(--duration-fast);
+      flex-shrink: 0;
+    }
+
+    .swap-btn:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+      transform: rotate(180deg);
+    }
+
+    /* Date + passenger row */
+    .search-row2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 640px) { .search-row2 { grid-template-columns: 1fr 1fr; } }
+
+    /* Seat class pills */
+    .seat-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    .seat-pill {
+      padding: 6px 14px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--duration-fast);
+    }
+
+    .seat-pill.active, .seat-pill:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(59,130,246,0.08);
+    }
+
+    /* Search button */
+    .search-btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, var(--accent), #2563eb);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      transition: transform var(--duration-fast), box-shadow var(--duration-fast), opacity var(--duration-fast);
+      box-shadow: 0 4px 24px var(--accent-glow);
+    }
+
+    .search-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(59,130,246,0.45);
+    }
+
+    .search-btn:active { transform: translateY(0); }
+
+    /* ── Results section ── */
+    .results-section {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 clamp(1rem, 5vw, 3rem) clamp(3rem, 8vw, 6rem);
+    }
+
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .results-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .results-meta {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    /* Filter bar */
+    .filter-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    .filter-btn {
+      padding: 7px 16px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      background: var(--surface-1);
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--duration-fast);
+    }
+
+    .filter-btn:hover, .filter-btn.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(59,130,246,0.06);
+    }
+
+    /* Train card */
+    .train-card {
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 0;
+      margin-bottom: 12px;
+      overflow: hidden;
+      transition: border-color var(--duration-normal), box-shadow var(--duration-normal), transform var(--duration-normal);
+      cursor: pointer;
+    }
+
+    .train-card:hover {
+      border-color: rgba(59,130,246,0.3);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+      transform: translateY(-2px);
+    }
+
+    .train-card-body {
+      padding: 1.25rem 1.5rem;
+      display: grid;
+      grid-template-columns: 180px 1fr auto;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    @media (max-width: 700px) {
+      .train-card-body { grid-template-columns: 1fr; gap: 1rem; }
+    }
+
+    .train-id-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .train-number {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .train-type-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 99px;
+      width: fit-content;
+    }
+
+    .badge-g { background: rgba(16,185,129,0.12); color: var(--success); border: 1px solid rgba(16,185,129,0.25); }
+    .badge-d { background: rgba(59,130,246,0.12); color: var(--accent); border: 1px solid rgba(59,130,246,0.25); }
+    .badge-c { background: rgba(245,158,11,0.12); color: var(--warn); border: 1px solid rgba(245,158,11,0.25); }
+    .badge-z { background: rgba(148,163,184,0.12); color: var(--text-secondary); border: 1px solid rgba(148,163,184,0.2); }
+
+    .train-route {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .station-block { text-align: left; }
+    .station-time {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+
+    .station-name {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    .duration-track {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .duration-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .track-line {
+      position: relative;
+      width: 100%;
+      height: 2px;
+      background: var(--border);
+      display: flex;
+      align-items: center;
+    }
+
+    .track-line::before,
+    .track-line::after {
+      content: '';
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      background: var(--bg);
+    }
+
+    .track-line::before { left: 0; }
+    .track-line::after { right: 0; }
+
+    .track-fill {
+      position: absolute;
+      left: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      border-radius: 1px;
+    }
+
+    .track-train-icon {
+      position: absolute;
+      font-size: 12px;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* Seat availability */
+    .seat-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 200px;
+    }
+
+    .seat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 10px;
+      background: var(--surface-2);
+      border-radius: 6px;
+      font-size: 0.8rem;
+      transition: background var(--duration-fast);
+      cursor: pointer;
+    }
+
+    .seat-row:hover { background: var(--surface-3); }
+
+    .seat-class { color: var(--text-secondary); }
+
+    .seat-price {
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .seat-count {
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 99px;
+    }
+
+    .count-ok { background: rgba(16,185,129,0.1); color: var(--success); }
+    .count-few { background: rgba(245,158,11,0.1); color: var(--warn); }
+    .count-none { background: rgba(239,68,68,0.1); color: var(--danger); text-decoration: line-through; }
+
+    /* Card footer (expandable) */
+    .train-card-footer {
+      border-top: 1px solid var(--border);
+      padding: 10px 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .footer-tags { display: flex; gap: 8px; }
+
+    .tag {
+      padding: 3px 8px;
+      background: var(--surface-2);
+      border-radius: 4px;
+      font-size: 0.72rem;
+    }
+
+    .tag-wifi { color: var(--accent-2); }
+    .tag-meal { color: var(--warn); }
+    .tag-charge { color: var(--success); }
+
+    .expand-btn {
+      background: none;
+      border: none;
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 2px 0;
+      transition: opacity var(--duration-fast);
+      font-family: inherit;
+    }
+
+    .expand-btn:hover { opacity: 0.7; }
+
+    /* Expandable stops detail */
+    .stops-detail {
+      display: none;
+      padding: 1rem 1.5rem 1.25rem;
+      border-top: 1px dashed var(--border);
+      background: var(--surface-2);
+    }
+
+    .stops-detail.open { display: block; }
+
+    .stops-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+      padding-left: 2rem;
+    }
+
+    .stops-timeline::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 10px;
+      bottom: 10px;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--accent), var(--accent-2));
+      border-radius: 1px;
+    }
+
+    .stop-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      position: relative;
+    }
+
+    .stop-dot {
+      position: absolute;
+      left: -1.45rem;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      background: var(--bg);
+    }
+
+    .stop-dot.terminal { background: var(--accent); }
+
+    .stop-name {
+      font-size: 0.85rem;
+      color: var(--text-primary);
+    }
+
+    .stop-time {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .stop-arrive {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    /* ── Pagination ── */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 2.5rem;
+    }
+
+    .page-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface-1);
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--duration-fast);
+    }
+
+    .page-btn.active, .page-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(59,130,246,0.06);
+    }
+
+    .page-btn.active { font-weight: 700; }
+
+    /* ── Loading skeleton ── */
+    .skeleton {
+      background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3) 50%, var(--surface-2) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 6px;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ── Booking modal ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(8px);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 2rem;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+      animation: slideUp 0.3s var(--ease-out);
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-title { font-size: 1.25rem; font-weight: 800; }
+    .modal-sub { font-size: 0.85rem; color: var(--text-secondary); margin-top: 2px; }
+
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background var(--duration-fast), color var(--duration-fast);
+      flex-shrink: 0;
+    }
+
+    .modal-close:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+    .modal-section { margin-bottom: 1.25rem; }
+    .modal-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 8px; }
+
+    .passenger-summary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 1.25rem;
+    }
+
+    .passenger-field input,
+    .passenger-field select {
+      padding: 11px 14px 11px 14px;
+    }
+
+    .price-breakdown {
+      background: var(--surface-2);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .price-line {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      padding: 4px 0;
+    }
+
+    .price-line.total {
+      border-top: 1px solid var(--border);
+      margin-top: 8px;
+      padding-top: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .price-highlight { color: var(--accent); }
+
+    .modal-confirm {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--accent), #2563eb);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform var(--duration-fast), box-shadow var(--duration-fast);
+      font-family: inherit;
+      box-shadow: 0 4px 20px var(--accent-glow);
+    }
+
+    .modal-confirm:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(59,130,246,0.45);
+    }
+
+    /* ── Stats bar ── */
+    .stats-bar {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: center;
+      gap: clamp(2rem, 6vw, 5rem);
+      padding: clamp(1.5rem, 3vw, 2.5rem) clamp(1rem, 5vw, 3rem);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: rgba(17,24,39,0.5);
+      margin-bottom: clamp(2rem, 5vw, 4rem);
+      flex-wrap: wrap;
+    }
+
+    .stat { text-align: center; }
+    .stat-value {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #f1f5f9, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── Toast notification ── */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      z-index: 300;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.4s var(--ease-out);
+      max-width: 340px;
+    }
+
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast-icon { font-size: 20px; }
+
+    /* Utility */
+    .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+    select option { background: var(--surface-1); }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(0.5);
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Header ── -->
+  <header>
+    <nav aria-label="主导航">
+      <a href="#" class="logo">
+        <span class="logo-icon">🚄</span>
+        RailPass
+      </a>
+      <ul class="nav-links">
+        <li><a href="#" class="active">订票</a></li>
+        <li><a href="#">我的行程</a></li>
+        <li><a href="#">特惠票</a></li>
+        <li><a href="#">帮助</a></li>
+      </ul>
+      <a href="#" class="nav-cta">登录 / 注册</a>
+    </nav>
+  </header>
+
+  <!-- ── Hero ── -->
+  <section class="hero" aria-labelledby="hero-heading">
+    <div class="hero-badge">
+      <span>●</span> 实时余票更新
+    </div>
+    <h1 id="hero-heading">预订你的下一段<br>高铁旅程</h1>
+    <p class="hero-sub">覆盖全国 4000+ 站点，秒级查询，安全快捷购票</p>
+
+    <!-- Search card -->
+    <div class="search-card" role="search" aria-label="火车票查询">
+      <div class="trip-tabs" role="tablist" aria-label="行程类型">
+        <button class="trip-tab active" role="tab" aria-selected="true" onclick="switchTab(this)">单程</button>
+        <button class="trip-tab" role="tab" aria-selected="false" onclick="switchTab(this)">往返</button>
+        <button class="trip-tab" role="tab" aria-selected="false" onclick="switchTab(this)">中转</button>
+      </div>
+
+      <!-- City row -->
+      <div class="search-grid">
+        <div class="field-group">
+          <label for="from-city">出发城市</label>
+          <div class="field-inner">
+            <span class="field-icon" aria-hidden="true">📍</span>
+            <input type="text" id="from-city" placeholder="请输入出发城市" value="北京" autocomplete="off">
+          </div>
+        </div>
+
+        <button class="swap-btn" aria-label="互换出发地与目的地" onclick="swapCities()" title="互换城市">⇄</button>
+
+        <div class="field-group">
+          <label for="to-city">目的地</label>
+          <div class="field-inner">
+            <span class="field-icon" aria-hidden="true">🏁</span>
+            <input type="text" id="to-city" placeholder="请输入目的地城市" value="上海" autocomplete="off">
+          </div>
+        </div>
+      </div>
+
+      <!-- Date + passenger row -->
+      <div class="search-row2">
+        <div class="field-group">
+          <label for="depart-date">出发日期</label>
+          <div class="field-inner">
+            <span class="field-icon" aria-hidden="true">📅</span>
+            <input type="date" id="depart-date">
+          </div>
+        </div>
+        <div class="field-group" id="return-date-group" style="display:none;">
+          <label for="return-date">返程日期</label>
+          <div class="field-inner">
+            <span class="field-icon" aria-hidden="true">📅</span>
+            <input type="date" id="return-date">
+          </div>
+        </div>
+        <div class="field-group">
+          <label for="passengers">乘客人数</label>
+          <div class="field-inner">
+            <span class="field-icon" aria-hidden="true">👤</span>
+            <select id="passengers">
+              <option value="1">1 人</option>
+              <option value="2">2 人</option>
+              <option value="3">3 人</option>
+              <option value="4">4 人</option>
+              <option value="5">5 人</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-group">
+          <label for="passenger-type">乘客类型</label>
+          <div class="field-inner">
+            <span class="field-icon" aria-hidden="true">🎫</span>
+            <select id="passenger-type">
+              <option value="adult">成人票</option>
+              <option value="student">学生票</option>
+              <option value="child">儿童票</option>
+              <option value="senior">老人票</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seat class filters -->
+      <div class="seat-pills" role="group" aria-label="座位等级">
+        <button class="seat-pill active" onclick="toggleSeat(this)">全部席别</button>
+        <button class="seat-pill" onclick="toggleSeat(this)">商务座</button>
+        <button class="seat-pill" onclick="toggleSeat(this)">一等座</button>
+        <button class="seat-pill" onclick="toggleSeat(this)">二等座</button>
+        <button class="seat-pill" onclick="toggleSeat(this)">卧铺</button>
+        <button class="seat-pill" onclick="toggleSeat(this)">无座</button>
+      </div>
+
+      <button class="search-btn" onclick="doSearch()">
+        查询可购车票
+      </button>
+    </div>
+  </section>
+
+  <!-- ── Stats ── -->
+  <div class="stats-bar" aria-label="平台数据">
+    <div class="stat">
+      <div class="stat-value">4,200+</div>
+      <div class="stat-label">覆盖站点</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">120万</div>
+      <div class="stat-label">日均出行旅客</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">99.8%</div>
+      <div class="stat-label">订票成功率</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">3s</div>
+      <div class="stat-label">平均出票时间</div>
+    </div>
+  </div>
+
+  <!-- ── Results ── -->
+  <section class="results-section" id="results-section" aria-live="polite">
+    <div class="results-header">
+      <div>
+        <div class="results-title" id="results-title">北京 → 上海 · 今日车次</div>
+        <div class="results-meta" id="results-meta">共找到 <strong>12</strong> 趟列车</div>
+      </div>
+      <div class="filter-bar" role="group" aria-label="筛选排序">
+        <button class="filter-btn active" onclick="setFilter(this)">全部</button>
+        <button class="filter-btn" onclick="setFilter(this)">G 高铁</button>
+        <button class="filter-btn" onclick="setFilter(this)">D 动车</button>
+        <button class="filter-btn" onclick="setFilter(this)">C 城际</button>
+        <button class="filter-btn" onclick="setFilter(this)">Z 直达</button>
+        <button class="filter-btn" onclick="setFilter(this)">最早出发</button>
+        <button class="filter-btn" onclick="setFilter(this)">最短用时</button>
+        <button class="filter-btn" onclick="setFilter(this)">最低票价</button>
+      </div>
+    </div>
+
+    <!-- Train list -->
+    <div id="train-list" aria-label="车次列表">
+      <!-- Populated by JS -->
+    </div>
+
+    <!-- Pagination -->
+    <nav class="pagination" aria-label="分页">
+      <button class="page-btn" aria-label="上一页">‹</button>
+      <button class="page-btn active" aria-current="page">1</button>
+      <button class="page-btn">2</button>
+      <button class="page-btn">3</button>
+      <button class="page-btn" aria-label="下一页">›</button>
+    </nav>
+  </section>
+
+  <!-- ── Booking modal ── -->
+  <div class="modal-overlay" id="booking-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" onclick="closeModalOnBg(event)">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title" id="modal-title">确认订单</div>
+          <div class="modal-sub" id="modal-sub">G1 · 北京南 → 上海虹桥 · 二等座</div>
+        </div>
+        <button class="modal-close" onclick="closeModal()" aria-label="关闭">✕</button>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-label">旅程信息</div>
+        <div style="background:var(--surface-2);border-radius:var(--radius-sm);padding:1rem;font-size:0.875rem;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <span style="color:var(--text-secondary)">车次</span>
+            <strong id="m-train">G1</strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <span style="color:var(--text-secondary)">日期</span>
+            <strong id="m-date">2026-06-06</strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <span style="color:var(--text-secondary)">出发 → 到达</span>
+            <strong id="m-route">07:00 → 12:28</strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;">
+            <span style="color:var(--text-secondary)">座位类型</span>
+            <strong id="m-seat">二等座</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-label">乘客信息</div>
+        <div class="passenger-summary">
+          <div class="passenger-field field-group">
+            <label for="p-name">姓名</label>
+            <div class="field-inner"><input type="text" id="p-name" placeholder="真实姓名" style="padding-left:14px;"></div>
+          </div>
+          <div class="passenger-field field-group">
+            <label for="p-id">身份证号</label>
+            <div class="field-inner"><input type="text" id="p-id" placeholder="18位身份证号" style="padding-left:14px;"></div>
+          </div>
+          <div class="passenger-field field-group">
+            <label for="p-phone">手机号</label>
+            <div class="field-inner"><input type="text" id="p-phone" placeholder="手机号码" style="padding-left:14px;"></div>
+          </div>
+          <div class="passenger-field field-group">
+            <label for="p-type">乘客类型</label>
+            <div class="field-inner">
+              <select id="p-type" style="padding-left:14px;">
+                <option>成人</option>
+                <option>学生</option>
+                <option>儿童</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="price-breakdown" id="modal-price">
+        <div class="price-line"><span>票价</span><span id="m-base-price">¥553.0</span></div>
+        <div class="price-line"><span>服务费</span><span>¥2.0</span></div>
+        <div class="price-line"><span>保险（可选）</span><span>¥10.0</span></div>
+        <div class="price-line total"><span>合计</span><span class="price-highlight" id="m-total">¥565.0</span></div>
+      </div>
+
+      <button class="modal-confirm" onclick="confirmBooking()">立即支付 &amp; 出票</button>
+    </div>
+  </div>
+
+  <!-- ── Toast ── -->
+  <div class="toast" id="toast" role="alert" aria-live="assertive">
+    <span class="toast-icon" id="toast-icon">✅</span>
+    <span id="toast-msg">订单已提交，正在出票…</span>
+  </div>
+
+  <script>
+    // ── Data ──────────────────────────────────────────────────
+    const TRAINS = [
+      {
+        id: 'G1', type: 'G', from: '北京南', to: '上海虹桥',
+        depart: '07:00', arrive: '12:28', duration: '5h28m',
+        stops: [
+          { name: '北京南', arrive: null, depart: '07:00' },
+          { name: '济南西', arrive: '08:37', depart: '08:39' },
+          { name: '南京南', arrive: '10:58', depart: '11:02' },
+          { name: '上海虹桥', arrive: '12:28', depart: null },
+        ],
+        seats: [
+          { cls: '商务座', price: 1748, count: 3, few: false },
+          { cls: '一等座', price: 935, count: 12, few: false },
+          { cls: '二等座', price: 553, count: 86, few: false },
+        ],
+        tags: ['wifi', 'meal', 'charge'], fill: 62
+      },
+      {
+        id: 'G3', type: 'G', from: '北京南', to: '上海虹桥',
+        depart: '08:05', arrive: '13:38', duration: '5h33m',
+        stops: [
+          { name: '北京南', arrive: null, depart: '08:05' },
+          { name: '天津西', arrive: '08:32', depart: '08:34' },
+          { name: '徐州东', arrive: '10:32', depart: '10:35' },
+          { name: '南京南', arrive: '11:38', depart: '11:41' },
+          { name: '上海虹桥', arrive: '13:38', depart: null },
+        ],
+        seats: [
+          { cls: '商务座', price: 1748, count: 0, few: false },
+          { cls: '一等座', price: 935, count: 2, few: true },
+          { cls: '二等座', price: 553, count: 45, few: false },
+        ],
+        tags: ['wifi', 'charge'], fill: 75
+      },
+      {
+        id: 'G7', type: 'G', from: '北京南', to: '上海虹桥',
+        depart: '10:48', arrive: '16:21', duration: '5h33m',
+        stops: [
+          { name: '北京南', arrive: null, depart: '10:48' },
+          { name: '济南西', arrive: '12:25', depart: '12:27' },
+          { name: '上海虹桥', arrive: '16:21', depart: null },
+        ],
+        seats: [
+          { cls: '商务座', price: 1748, count: 8, few: false },
+          { cls: '一等座', price: 935, count: 35, few: false },
+          { cls: '二等座', price: 553, count: 120, few: false },
+        ],
+        tags: ['wifi', 'meal', 'charge'], fill: 30
+      },
+      {
+        id: 'D301', type: 'D', from: '北京南', to: '上海',
+        depart: '13:30', arrive: '23:01', duration: '9h31m',
+        stops: [
+          { name: '北京南', arrive: null, depart: '13:30' },
+          { name: '济南', arrive: '15:42', depart: '15:50' },
+          { name: '南京', arrive: '19:20', depart: '19:26' },
+          { name: '苏州', arrive: '22:10', depart: '22:14' },
+          { name: '上海', arrive: '23:01', depart: null },
+        ],
+        seats: [
+          { cls: '一等座', price: 420, count: 7, few: true },
+          { cls: '二等座', price: 278, count: 63, few: false },
+          { cls: '卧铺', price: 340, count: 20, few: false },
+        ],
+        tags: ['meal', 'charge'], fill: 50
+      },
+      {
+        id: 'G9', type: 'G', from: '北京南', to: '上海虹桥',
+        depart: '16:00', arrive: '21:27', duration: '5h27m',
+        stops: [
+          { name: '北京南', arrive: null, depart: '16:00' },
+          { name: '济南西', arrive: '17:38', depart: '17:41' },
+          { name: '上海虹桥', arrive: '21:27', depart: null },
+        ],
+        seats: [
+          { cls: '商务座', price: 1748, count: 0, few: false },
+          { cls: '一等座', price: 935, count: 0, few: false },
+          { cls: '二等座', price: 553, count: 2, few: true },
+        ],
+        tags: ['wifi', 'charge'], fill: 98
+      },
+      {
+        id: 'Z1', type: 'Z', from: '北京', to: '上海',
+        depart: '20:00', arrive: '06:54', duration: '10h54m',
+        stops: [
+          { name: '北京', arrive: null, depart: '20:00' },
+          { name: '德州', arrive: '22:14', depart: '22:19' },
+          { name: '济南', arrive: '23:05', depart: '23:15' },
+          { name: '徐州', arrive: '01:39', depart: '01:49' },
+          { name: '上海', arrive: '06:54', depart: null },
+        ],
+        seats: [
+          { cls: '软卧', price: 500, count: 14, few: false },
+          { cls: '硬卧', price: 280, count: 40, few: false },
+          { cls: '硬座', price: 100, count: 0, few: false },
+        ],
+        tags: ['meal'], fill: 45
+      },
+    ]
+
+    const TAG_MAP = {
+      wifi:   { icon: '📶', label: 'WiFi', cls: 'tag-wifi' },
+      meal:   { icon: '🍱', label: '餐车', cls: 'tag-meal' },
+      charge: { icon: '🔋', label: '充电', cls: 'tag-charge' },
+    }
+
+    const BADGE_MAP = {
+      G: { cls: 'badge-g', label: '高铁 G' },
+      D: { cls: 'badge-d', label: '动车 D' },
+      C: { cls: 'badge-c', label: '城际 C' },
+      Z: { cls: 'badge-z', label: '直达 Z' },
+    }
+
+    // ── Init ──────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+      const today = new Date()
+      const fmt = d => d.toISOString().split('T')[0]
+      document.getElementById('depart-date').value = fmt(today)
+      const retDate = new Date(today)
+      retDate.setDate(retDate.getDate() + 3)
+      document.getElementById('return-date').value = fmt(retDate)
+      renderTrains(TRAINS)
+    })
+
+    // ── UI helpers ────────────────────────────────────────────
+    function switchTab(btn) {
+      document.querySelectorAll('.trip-tab').forEach(t => {
+        t.classList.remove('active')
+        t.setAttribute('aria-selected', 'false')
+      })
+      btn.classList.add('active')
+      btn.setAttribute('aria-selected', 'true')
+      const showReturn = btn.textContent.trim() === '往返'
+      document.getElementById('return-date-group').style.display = showReturn ? '' : 'none'
+    }
+
+    function swapCities() {
+      const a = document.getElementById('from-city')
+      const b = document.getElementById('to-city')
+      ;[a.value, b.value] = [b.value, a.value]
+    }
+
+    function toggleSeat(pill) {
+      if (pill.textContent === '全部席别') {
+        document.querySelectorAll('.seat-pill').forEach(p => p.classList.remove('active'))
+      } else {
+        document.querySelector('.seat-pill:first-child').classList.remove('active')
+      }
+      pill.classList.toggle('active')
+    }
+
+    function setFilter(btn) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'))
+      btn.classList.add('active')
+    }
+
+    // ── Render ────────────────────────────────────────────────
+    function renderTrains(trains) {
+      const list = document.getElementById('train-list')
+      list.innerHTML = trains.map((t, i) => buildCard(t, i)).join('')
+    }
+
+    function buildCard(t, idx) {
+      const badge = BADGE_MAP[t.type] || BADGE_MAP['Z']
+      const tagsHtml = t.tags.map(k => {
+        const tm = TAG_MAP[k]
+        return `<span class="tag ${tm.cls}">${tm.icon} ${tm.label}</span>`
+      }).join('')
+
+      const seatsHtml = t.seats.map(s => {
+        const countClass = s.count === 0 ? 'count-none' : (s.few ? 'count-few' : 'count-ok')
+        const countLabel = s.count === 0 ? '无票' : (s.few ? `剩 ${s.count}` : `充足`)
+        const isNone = s.count === 0
+        return `
+          <div class="seat-row" onclick="${isNone ? '' : `openModal(event, ${JSON.stringify(t).replace(/"/g, '&quot;')}, '${s.cls}', ${s.price})`}"
+               style="${isNone ? 'opacity:.5;cursor:not-allowed' : ''}">
+            <span class="seat-class">${s.cls}</span>
+            <span class="seat-price">¥${s.price}</span>
+            <span class="seat-count ${countClass}">${countLabel}</span>
+          </div>`
+      }).join('')
+
+      const stopsHtml = t.stops.map((s, i) => {
+        const isTerminal = i === 0 || i === t.stops.length - 1
+        const timeLeft = s.arrive || s.depart
+        const timeRight = (s.arrive && s.depart) ? `停 ${calcStop(s.arrive, s.depart)} 分` : ''
+        return `
+          <div class="stop-item">
+            <span class="stop-dot ${isTerminal ? 'terminal' : ''}" aria-hidden="true"></span>
+            <span class="stop-name">${s.name}</span>
+            <div style="text-align:right">
+              <div class="stop-time">${timeLeft}</div>
+              <div class="stop-arrive">${timeRight}</div>
+            </div>
+          </div>`
+      }).join('')
+
+      return `
+        <article class="train-card" data-type="${t.type}">
+          <div class="train-card-body">
+            <div class="train-id-block">
+              <span class="train-number">${t.id}</span>
+              <span class="train-type-badge ${badge.cls}">${badge.label}</span>
+            </div>
+            <div class="train-route">
+              <div class="station-block">
+                <div class="station-time">${t.depart}</div>
+                <div class="station-name">${t.from}</div>
+              </div>
+              <div class="duration-track">
+                <span class="duration-label">⏱ ${t.duration}</span>
+                <div class="track-line">
+                  <div class="track-fill" style="width:${t.fill}%"></div>
+                  <span class="track-train-icon" style="left:${t.fill}%">🚄</span>
+                </div>
+              </div>
+              <div class="station-block" style="text-align:right">
+                <div class="station-time">${t.arrive}</div>
+                <div class="station-name">${t.to}</div>
+              </div>
+            </div>
+            <div class="seat-grid">${seatsHtml}</div>
+          </div>
+          <div class="train-card-footer">
+            <div class="footer-tags">${tagsHtml}</div>
+            <button class="expand-btn" onclick="toggleStops(this, ${idx})" aria-expanded="false" aria-controls="stops-${idx}">
+              经停站 ▾
+            </button>
+          </div>
+          <div class="stops-detail" id="stops-${idx}" role="region" aria-label="${t.id} 经停站">
+            <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.07em;font-weight:600;">沿途经停</p>
+            <div class="stops-timeline">${stopsHtml}</div>
+          </div>
+        </article>`
+    }
+
+    function calcStop(arrive, depart) {
+      const [ah, am] = arrive.split(':').map(Number)
+      const [dh, dm] = depart.split(':').map(Number)
+      return (dh * 60 + dm) - (ah * 60 + am)
+    }
+
+    function toggleStops(btn, idx) {
+      const detail = document.getElementById(`stops-${idx}`)
+      const isOpen = detail.classList.toggle('open')
+      btn.textContent = isOpen ? '收起 ▴' : '经停站 ▾'
+      btn.setAttribute('aria-expanded', isOpen)
+    }
+
+    // ── Search ────────────────────────────────────────────────
+    function doSearch() {
+      const from = document.getElementById('from-city').value.trim()
+      const to   = document.getElementById('to-city').value.trim()
+      const date = document.getElementById('depart-date').value
+      if (!from || !to) { showToast('请输入出发城市和目的地', '⚠️'); return }
+
+      document.getElementById('results-title').textContent = `${from} → ${to} · ${date || '今日'} 车次`
+
+      // Simulate loading
+      const list = document.getElementById('train-list')
+      list.innerHTML = Array(3).fill(0).map(() =>
+        `<div style="height:130px;border-radius:12px;margin-bottom:12px;" class="skeleton"></div>`
+      ).join('')
+
+      setTimeout(() => {
+        renderTrains(TRAINS)
+        document.getElementById('results-meta').innerHTML = `共找到 <strong>${TRAINS.length}</strong> 趟列车`
+        document.getElementById('results-section').scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 800)
+    }
+
+    // ── Modal ─────────────────────────────────────────────────
+    let currentTrain = null
+
+    function openModal(e, train, seatCls, price) {
+      e.stopPropagation()
+      currentTrain = { train, seatCls, price }
+
+      document.getElementById('modal-sub').textContent =
+        `${train.id} · ${train.from} → ${train.to} · ${seatCls}`
+      document.getElementById('m-train').textContent  = train.id
+      document.getElementById('m-date').textContent   = document.getElementById('depart-date').value
+      document.getElementById('m-route').textContent  = `${train.depart} → ${train.arrive}`
+      document.getElementById('m-seat').textContent   = seatCls
+      document.getElementById('m-base-price').textContent = `¥${price}`
+      document.getElementById('m-total').textContent  = `¥${(price + 12).toFixed(1)}`
+
+      document.getElementById('booking-modal').classList.add('open')
+      document.body.style.overflow = 'hidden'
+    }
+
+    function closeModal() {
+      document.getElementById('booking-modal').classList.remove('open')
+      document.body.style.overflow = ''
+    }
+
+    function closeModalOnBg(e) {
+      if (e.target === document.getElementById('booking-modal')) closeModal()
+    }
+
+    function confirmBooking() {
+      const name  = document.getElementById('p-name').value.trim()
+      const idNum = document.getElementById('p-id').value.trim()
+      const phone = document.getElementById('p-phone').value.trim()
+      if (!name || !idNum || !phone) {
+        showToast('请填写完整乘客信息', '⚠️'); return
+      }
+      closeModal()
+      showToast(`订单已提交！${currentTrain.train.id} · ${currentTrain.seatCls} 正在出票…`, '✅')
+    }
+
+    // ── Toast ─────────────────────────────────────────────────
+    let toastTimer = null
+    function showToast(msg, icon = '✅') {
+      const toast = document.getElementById('toast')
+      document.getElementById('toast-msg').textContent = msg
+      document.getElementById('toast-icon').textContent = icon
+      toast.classList.add('show')
+      clearTimeout(toastTimer)
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 3500)
+    }
+
+    // Keyboard: Esc closes modal
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeModal()
+    })
+  </script>
+</body>
+</html>
+```

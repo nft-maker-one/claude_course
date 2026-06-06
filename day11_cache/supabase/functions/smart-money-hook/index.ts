@@ -6,16 +6,11 @@ const STABLECOINS = new Set([
 ]);
 
 const MONITORED = new Set([
-  "3BEaKXn847KD7VGkK2sfcrdTSD51DWXWJW6tqubHjU4g",
-  "FdHEV7sRsHJch6LmnEBtzLtU28zK3Dogb9tbhXLNyyGT",
-  "FdRZFLAAP1kgGjTVeKgdD8pKwqT8freLPNo5Ur8u14hJ",
-  "BtHnhjh8Ta2vGZkrL76AmXMur1ADo3tpRo2kQMe2BCSU",
-  "DNio5ketGczp2dsB3jJCm3XNsRETaAM87q3YVMPA5F9z",
-  "9dW7y6yWSHuk2HCS2keR14h2NyhKPKnz5CTMC9SMdX45",
-  "A2MwjTFz4jzT1mY4xrqkwm1vAbZDrqnA6QJoyTAU8Djw",
-  "5CVjp216wUnqUuzPkWHWRiA8ovbfiE3MbnxADuehUotK",
-  "DK6sTE5yz4xFT4eravZX16HKLvkKnfynYirZAtXRA9jQ",
-  "HXbwX1oGic2A5skRxVrsrQDrbAiq21u4JEzvKaFTdJBm",
+  "CyaE1VxvBrahnPWkqm5VsdCvyS2QmNht2UFrKJHga54o",
+  "6S8GezkxYUfZy9JPtYnanbcZTMB87Wjt1qx3c6ELajKC",
+  "4BdKaxN8G6ka4GYtQQWk4G4dZRUTX2vQH9GcXdBREFUk",
+  "Bi4rd5FH5bYEN8scZ7wevxNZyNmKHdaBcvewdPFxYdLt",
+  "DxM1hfY8FQ8dNGrucuJzhJcF8KRbjk8WBwrgKvQ9spPv",
 ]);
 
 const SOL_MINT = "So11111111111111111111111111111111111111112";
@@ -74,11 +69,22 @@ Deno.serve(async (req) => {
   const rows: Record<string, unknown>[] = [];
 
   for (const tx of txList) {
-    if (tx.type !== "SWAP") continue;
+    console.log("[debug] tx.type:", tx.type, "sig:", tx.signature?.slice(0, 16));
+
+    if (tx.type !== "SWAP") {
+      console.log("[debug] skipped: type is not SWAP");
+      continue;
+    }
     const swap = tx.events?.swap ?? {};
     const valueUsd = computeValueUsd(swap, solPrice);
 
-    for (const transfer of tx.tokenTransfers ?? []) {
+    const transfers = tx.tokenTransfers ?? [];
+    console.log("[debug] tokenTransfers count:", transfers.length);
+    transfers.forEach((t: Record<string, any>, i: number) => {
+      console.log(`[debug]   transfer[${i}] toUserAccount=${t.toUserAccount} mint=${t.mint} amount=${t.tokenAmount}`);
+    });
+
+    for (const transfer of transfers) {
       const buyer: string = transfer.toUserAccount ?? "";
       if (!MONITORED.has(buyer)) continue;
       const tokenAmt = parseFloat(transfer.tokenAmount);

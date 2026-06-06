@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Money Tracker · Solana Alpha</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #07080c;
+    --surface:   #0e1018;
+    --surface2:  #141720;
+    --border:    rgba(255,255,255,0.06);
+    --cyan:      #00d4ff;
+    --green:     #00ff88;
+    --red:       #ff4466;
+    --amber:     #ffaa00;
+    --text:      #e2e8f0;
+    --muted:     #64748b;
+    --mono:      'JetBrains Mono', monospace;
+    --sans:      'Space Grotesk', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0,212,255,0.07) 0%, transparent 60%),
+      url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Ccircle cx='20' cy='20' r='1' fill='rgba(255,255,255,0.03)'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* ── Header ── */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 32px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(14,16,24,0.8);
+    backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--cyan), var(--green));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+
+  .logo h1 {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+
+  .logo p {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 1px;
+  }
+
+  .live-badge {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(0,255,136,0.08);
+    border: 1px solid rgba(0,255,136,0.2);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--green);
+  }
+
+  .pulse-dot {
+    width: 7px; height: 7px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(0,255,136,0.4); }
+    50%       { opacity: 0.8; transform: scale(1.15); box-shadow: 0 0 0 5px rgba(0,255,136,0); }
+  }
+
+  header nav {
+    display: flex;
+    gap: 6px;
+  }
+
+  header nav button {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-family: var(--sans);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  header nav button:hover { border-color: var(--cyan); color: var(--cyan); }
+  header nav button.active { background: rgba(0,212,255,0.1); border-color: var(--cyan); color: var(--cyan); }
+
+  /* ── Main layout ── */
+  main {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 28px 32px;
+  }
+
+  /* ── KPI cards ── */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .kpi {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .kpi::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .kpi:nth-child(1)::before { background: linear-gradient(90deg, var(--cyan), transparent); }
+  .kpi:nth-child(2)::before { background: linear-gradient(90deg, var(--green), transparent); }
+  .kpi:nth-child(3)::before { background: linear-gradient(90deg, var(--amber), transparent); }
+  .kpi:nth-child(4)::before { background: linear-gradient(90deg, #b78bfa, transparent); }
+
+  .kpi:hover { border-color: rgba(255,255,255,0.12); }
+
+  .kpi-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 10px;
+  }
+
+  .kpi-value {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    line-height: 1;
+  }
+
+  .kpi-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  .kpi-sub .up { color: var(--green); }
+  .kpi-sub .dn { color: var(--red); }
+
+  /* ── Content grid ── */
+  .content-grid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 20px;
+    align-items: start;
+  }
+
+  /* ── Panel ── */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .panel-title {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+  }
+
+  .panel-title span {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--muted);
+    margin-left: 8px;
+  }
+
+  /* ── Filter tabs ── */
+  .filter-tabs {
+    display: flex;
+    gap: 4px;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+
+  .filter-tab {
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid transparent;
+    background: none;
+    color: var(--muted);
+    font-family: var(--sans);
+    transition: all 0.15s;
+  }
+
+  .filter-tab:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+  .filter-tab.active { background: rgba(0,212,255,0.1); border-color: rgba(0,212,255,0.3); color: var(--cyan); }
+
+  .filter-tab.whale.active  { background: rgba(255,68,102,0.1);  border-color: rgba(255,68,102,0.3);  color: var(--red);   }
+  .filter-tab.mid.active    { background: rgba(255,170,0,0.1);   border-color: rgba(255,170,0,0.3);   color: var(--amber); }
+  .filter-tab.small.active  { background: rgba(0,255,136,0.08);  border-color: rgba(0,255,136,0.25);  color: var(--green); }
+
+  /* ── Feed table ── */
+  .feed-wrap {
+    max-height: 520px;
+    overflow-y: auto;
+  }
+
+  .feed-wrap::-webkit-scrollbar { width: 4px; }
+  .feed-wrap::-webkit-scrollbar-track { background: transparent; }
+  .feed-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead th {
+    padding: 10px 16px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+    text-align: left;
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+    z-index: 1;
+    border-bottom: 1px solid var(--border);
+  }
+
+  thead th:last-child { text-align: right; }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+    cursor: default;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(255,255,255,0.025); }
+
+  tbody tr.flash-new {
+    animation: rowFlash 1.2s ease-out forwards;
+  }
+
+  @keyframes rowFlash {
+    0%   { background: rgba(0,255,136,0.15); }
+    100% { background: transparent; }
+  }
+
+  tbody td {
+    padding: 13px 16px;
+    font-size: 13px;
+    vertical-align: middle;
+  }
+
+  .time-cell {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .wallet-cell {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+
+  .wallet-avatar {
+    width: 28px; height: 28px;
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .wallet-addr {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--cyan);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .wallet-addr:hover { color: #fff; text-decoration: underline; }
+
+  .token-addr {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: #b78bfa;
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .token-addr:hover { color: #fff; text-decoration: underline; }
+
+  .amount-cell {
+    text-align: right;
+  }
+
+  .amount-main {
+    font-weight: 600;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .amount-sub {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .size-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .size-tag.whale { background: rgba(255,68,102,0.12);  color: var(--red);   border: 1px solid rgba(255,68,102,0.25);  }
+  .size-tag.mid   { background: rgba(255,170,0,0.1);    color: var(--amber); border: 1px solid rgba(255,170,0,0.25);   }
+  .size-tag.small { background: rgba(0,255,136,0.08);   color: var(--green); border: 1px solid rgba(0,255,136,0.2);   }
+
+  .copy-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 4px 9px;
+    border-radius: 5px;
+    font-family: var(--sans);
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .copy-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+  .copy-btn.copied { border-color: var(--green); color: var(--green); }
+
+  /* ── Right sidebar ── */
+  .sidebar { display: flex; flex-direction: column; gap: 20px; }
+
+  /* ── Token leaderboard ── */
+  .token-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+
+  .token-item:last-child { border-bottom: none; }
+  .token-item:hover { background: rgba(255,255,255,0.025); }
+
+  .token-rank {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    width: 18px;
+    flex-shrink: 0;
+  }
+
+  .token-icon {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .token-info { flex: 1; min-width: 0; }
+
+  .token-name {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: #b78bfa;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .token-buys {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .token-vol {
+    font-size: 12px;
+    font-weight: 600;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .bar-wrap {
+    height: 3px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    margin-top: 4px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--cyan), var(--green));
+  }
+
+  /* ── Wallet performance ── */
+  .wallet-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+
+  .wallet-row:last-child { border-bottom: none; }
+  .wallet-row:hover { background: rgba(255,255,255,0.025); }
+
+  .wallet-row .wallet-avatar { width: 24px; height: 24px; font-size: 9px; border-radius: 5px; }
+
+  .wallet-row .wallet-addr { font-size: 11px; }
+
+  .wallet-row-info { flex: 1; }
+
+  .wallet-row-stats {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 2px;
+    font-family: var(--mono);
+  }
+
+  .heat-badge {
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+
+  .heat-badge.hot  { background: rgba(255,68,102,0.12); color: var(--red);   border: 1px solid rgba(255,68,102,0.25); }
+  .heat-badge.warm { background: rgba(255,170,0,0.1);   color: var(--amber); border: 1px solid rgba(255,170,0,0.25);  }
+  .heat-badge.cold { background: rgba(100,116,139,0.12); color: var(--muted); border: 1px solid rgba(100,116,139,0.2); }
+
+  /* ── Toast ── */
+  #toast {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    background: var(--surface2);
+    border: 1px solid var(--green);
+    color: var(--green);
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
+  }
+
+  #toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── Correlation heatmap ── */
+  .corr-panel { margin-top: 20px; }
+
+  .heatmap-grid {
+    display: grid;
+    grid-template-columns: 120px repeat(10, 1fr);
+    gap: 3px;
+    padding: 16px;
+    overflow-x: auto;
+    min-width: 0;
+  }
+
+  .hm-wallet-header {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 6px 4px; cursor: pointer; border-radius: 6px; transition: background 0.15s;
+  }
+  .hm-wallet-header:hover { background: rgba(255,255,255,0.05); }
+
+  .hm-wallet-avatar {
+    width: 22px; height: 22px; border-radius: 5px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px; font-weight: 700;
+  }
+
+  .hm-wallet-lbl { font-family: var(--mono); font-size: 8px; color: var(--muted); }
+
+  .hm-token-label {
+    display: flex; align-items: center; padding: 0 8px;
+    font-family: var(--mono); font-size: 10px; color: #b78bfa;
+    cursor: pointer; border-radius: 5px; transition: background 0.15s, color 0.15s;
+    min-height: 38px; border: 1px solid transparent; user-select: none;
+  }
+  .hm-token-label:hover { background: rgba(183,139,250,0.08); color: #d4b0ff; }
+  .hm-token-label.active-filter { background: rgba(183,139,250,0.12); border-color: rgba(183,139,250,0.35); color: #fff; }
+
+  .hm-cell {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 38px; border-radius: 5px;
+    font-family: var(--mono); font-size: 11px; font-weight: 600;
+    cursor: default; position: relative; transition: transform 0.1s;
+  }
+  .hm-cell:hover { transform: scale(1.1); z-index: 2; }
+  .hm-cell:hover .hm-tooltip { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: none; }
+
+  .hm-tooltip {
+    position: absolute; bottom: calc(100% + 6px); left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    background: #1a1d28; border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 6px; padding: 7px 10px;
+    font-size: 10px; font-family: var(--sans); color: var(--text);
+    white-space: nowrap; opacity: 0;
+    transition: opacity 0.15s, transform 0.15s;
+    z-index: 100; line-height: 1.6;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  }
+  .hm-tooltip::after {
+    content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+    border: 5px solid transparent; border-top-color: #1a1d28;
+  }
+
+  .conviction-banner {
+    display: flex; align-items: center; gap: 8px;
+    margin: 0 16px 10px; padding: 9px 14px;
+    background: rgba(255,170,0,0.07); border: 1px solid rgba(255,170,0,0.22);
+    border-radius: 8px; font-size: 11px; color: var(--amber); font-weight: 500;
+  }
+  .conviction-dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--amber);
+    animation: pulse 1.8s ease-in-out infinite; flex-shrink: 0;
+  }
+
+  .corr-legend {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 16px 14px; font-size: 10px; color: var(--muted);
+  }
+  .legend-grad { display: flex; gap: 2px; align-items: center; }
+  .legend-swatch { width: 18px; height: 11px; border-radius: 3px; }
+
+  /* ── Responsive ── */
+  @media (max-width: 1100px) {
+    .content-grid { grid-template-columns: 1fr; }
+    .sidebar { display: grid; grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 720px) {
+    main { padding: 16px; }
+    .kpi-row { grid-template-columns: 1fr 1fr; }
+    .sidebar { grid-template-columns: 1fr; }
+    header { padding: 14px 16px; }
+    header nav { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">◈</div>
+    <div>
+      <h1>Smart Money Tracker</h1>
+      <p>Real-time Solana alpha from top wallets</p>
+    </div>
+  </div>
+
+  <div class="live-badge">
+    <span class="pulse-dot"></span>
+    LIVE
+  </div>
+
+  <nav>
+    <button class="active">Feed</button>
+    <button>Analytics</button>
+    <button>Alerts</button>
+  </nav>
+</header>
+
+<!-- Main -->
+<main>
+
+  <!-- KPI Row -->
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-label">Total Buys Tracked</div>
+      <div class="kpi-value" id="kpi-total">1,247</div>
+      <div class="kpi-sub"><span class="up">+38</span> in last hour</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Volume Today</div>
+      <div class="kpi-value" id="kpi-vol">$2.41M</div>
+      <div class="kpi-sub"><span class="up">↑ 18.4%</span> vs yesterday</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Active Wallets</div>
+      <div class="kpi-value" id="kpi-wallets">8 <span style="font-size:14px;color:var(--muted)">/10</span></div>
+      <div class="kpi-sub">2 wallets silent today</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Hottest Token</div>
+      <div class="kpi-value" style="font-family:var(--mono);font-size:18px;color:#b78bfa" id="kpi-hot">7xKX…mNp3</div>
+      <div class="kpi-sub"><span class="up">6 wallets</span> bought in 1h</div>
+    </div>
+  </div>
+
+  <!-- Content Grid -->
+  <div class="content-grid">
+
+    <!-- Live Feed -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Live Buy Feed <span id="feed-count">20 signals</span></div>
+        <div class="live-badge" style="font-size:11px; padding:3px 10px;">
+          <span class="pulse-dot"></span> Streaming
+        </div>
+      </div>
+
+      <div class="filter-tabs">
+        <button class="filter-tab active" data-filter="all">All</button>
+        <button class="filter-tab whale" data-filter="whale">🐋 Whale (&gt;$50k)</button>
+        <button class="filter-tab mid" data-filter="mid">Mid ($10k–$50k)</button>
+        <button class="filter-tab small" data-filter="small">Small (&lt;$10k)</button>
+      </div>
+
+      <div class="feed-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Wallet</th>
+              <th>Token</th>
+              <th>Size</th>
+              <th style="text-align:right">Value</th>
+              <th style="text-align:right"></th>
+            </tr>
+          </thead>
+          <tbody id="feed-body">
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+
+      <!-- Token Leaderboard -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Token Leaderboard <span>24h</span></div>
+        </div>
+        <div id="token-leaderboard"></div>
+      </div>
+
+      <!-- Wallet Performance -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Wallet Activity <span>today</span></div>
+        </div>
+        <div id="wallet-perf"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Correlation Heatmap -->
+  <div class="panel corr-panel">
+    <div class="panel-header">
+      <div class="panel-title">Token-Wallet Correlation <span id="corr-subtitle">click a token to filter feed</span></div>
+      <button id="corr-clear" class="copy-btn" style="display:none">✕ Clear filter</button>
+    </div>
+    <div id="conviction-banner" class="conviction-banner" style="display:none">
+      <span class="conviction-dot"></span>
+      <span id="conviction-msg"></span>
+    </div>
+    <div id="heatmap-grid" class="heatmap-grid"></div>
+    <div class="corr-legend">
+      <span>Buy count intensity:</span>
+      <div class="legend-grad">
+        <div class="legend-swatch" style="background:rgba(0,212,255,0.06)"></div>
+        <div class="legend-swatch" style="background:rgba(0,212,255,0.22)"></div>
+        <div class="legend-swatch" style="background:rgba(0,212,255,0.42)"></div>
+        <div class="legend-swatch" style="background:rgba(0,212,255,0.62)"></div>
+        <div class="legend-swatch" style="background:rgba(0,212,255,0.80)"></div>
+      </div>
+      <span>0 → 5+</span>
+      <span style="margin-left:14px;color:var(--amber)">★ = 3+ wallets converging (conviction signal)</span>
+    </div>
+  </div>
+
+</main>
+
+<!-- Toast -->
+<div id="toast">✓ Signal copied</div>
+
+<script>
+// ── Data ────────────────────────────────────────────────────────────────────
+
+const WALLETS = [
+  { addr: "3BEaKXn847KD7VGkK2sfcrdTSD51DWXWJW6tqubHjU4g", color: "#00d4ff", bg: "rgba(0,212,255,0.15)" },
+  { addr: "FdHEV7sRsHJch6LmnEBtzLtU28zK3Dogb9tbhXLNyyGT", color: "#00ff88", bg: "rgba(0,255,136,0.15)" },
+  { addr: "FdRZFLAAP1kgGjTVeKgdD8pKwqT8freLPNo5Ur8u14hJ", color: "#b78bfa", bg: "rgba(183,139,250,0.15)" },
+  { addr: "BtHnhjh8Ta2vGZkrL76AmXMur1ADo3tpRo2kQMe2BCSU", color: "#ffaa00", bg: "rgba(255,170,0,0.15)" },
+  { addr: "DNio5ketGczp2dsB3jJCm3XNsRETaAM87q3YVMPA5F9z", color: "#ff6eb4", bg: "rgba(255,110,180,0.15)" },
+  { addr: "9dW7y6yWSHuk2HCS2keR14h2NyhKPKnz5CTMC9SMdX45", color: "#4aeadc", bg: "rgba(74,234,220,0.15)" },
+  { addr: "A2MwjTFz4jzT1mY4xrqkwm1vAbZDrqnA6QJoyTAU8Djw", color: "#ffd166", bg: "rgba(255,209,102,0.15)" },
+  { addr: "5CVjp216wUnqUuzPkWHWRiA8ovbfiE3MbnxADuehUotK",  color: "#06d6a0", bg: "rgba(6,214,160,0.15)"  },
+  { addr: "DK6sTE5yz4xFT4eravZX16HKLvkKnfynYirZAtXRA9jQ", color: "#ef476f", bg: "rgba(239,71,111,0.15)" },
+  { addr: "HXbwX1oGic2A5skRxVrsrQDrbAiq21u4JEzvKaFTdJBm", color: "#118ab2", bg: "rgba(17,138,178,0.15)"  },
+];
+
+const TOKENS = [
+  "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
+  "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So",
+  "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+  "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+  "rndrizKT3MK1iimdxRdWabcF7Zg7AR5T4nud4EkHBof",
+  "9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E",
+  "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKZRB",
+  "kinXdEcpDQeHPEuQnqmUgtYykqKCSVreKXkf7QNHB1G",
+];
+
+const now = Date.now();
+
+const FEED_DATA = [
+  { secsAgo: 72,   walletIdx: 0, tokenIdx: 0, amt: 4800000,  usd: 280400 },
+  { secsAgo: 195,  walletIdx: 1, tokenIdx: 1, amt: 920000,   usd: 63200  },
+  { secsAgo: 310,  walletIdx: 2, tokenIdx: 0, amt: 2100000,  usd: 122100 },
+  { secsAgo: 480,  walletIdx: 3, tokenIdx: 2, amt: 650000,   usd: 38750  },
+  { secsAgo: 612,  walletIdx: 4, tokenIdx: 3, amt: 185000,   usd: 18520  },
+  { secsAgo: 780,  walletIdx: 5, tokenIdx: 0, amt: 3200000,  usd: 186400 },
+  { secsAgo: 945,  walletIdx: 6, tokenIdx: 4, amt: 74000,    usd: 7430   },
+  { secsAgo: 1100, walletIdx: 7, tokenIdx: 1, amt: 510000,   usd: 34980  },
+  { secsAgo: 1380, walletIdx: 0, tokenIdx: 5, amt: 1600000,  usd: 93200  },
+  { secsAgo: 1620, walletIdx: 8, tokenIdx: 0, amt: 8900000,  usd: 519100 },
+  { secsAgo: 2100, walletIdx: 9, tokenIdx: 6, amt: 225000,   usd: 22550  },
+  { secsAgo: 2580, walletIdx: 1, tokenIdx: 2, amt: 480000,   usd: 28680  },
+  { secsAgo: 3240, walletIdx: 3, tokenIdx: 0, amt: 1850000,  usd: 107800 },
+  { secsAgo: 3900, walletIdx: 6, tokenIdx: 7, amt: 90000,    usd: 9000   },
+  { secsAgo: 4620, walletIdx: 2, tokenIdx: 1, amt: 370000,   usd: 25380  },
+  { secsAgo: 5400, walletIdx: 5, tokenIdx: 3, amt: 620000,   usd: 62100  },
+  { secsAgo: 6000, walletIdx: 7, tokenIdx: 0, amt: 2700000,  usd: 157320 },
+  { secsAgo: 6840, walletIdx: 4, tokenIdx: 5, amt: 53000,    usd: 5295   },
+  { secsAgo: 7200, walletIdx: 0, tokenIdx: 4, amt: 1120000,  usd: 112000 },
+  { secsAgo: 7920, walletIdx: 9, tokenIdx: 2, amt: 340000,   usd: 20360  },
+];
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+function short(addr) {
+  return addr.slice(0, 4) + "…" + addr.slice(-4);
+}
+
+function fmtAmt(n) {
+  if (n >= 1e6) return (n / 1e6).toFixed(2) + "M";
+  if (n >= 1e3) return (n / 1e3).toFixed(1) + "K";
+  return n.toLocaleString();
+}
+
+function fmtUsd(n) {
+  if (n >= 1e6) return "$" + (n / 1e6).toFixed(2) + "M";
+  if (n >= 1e3) return "$" + (n / 1e3).toFixed(1) + "K";
+  return "$" + n.toLocaleString();
+}
+
+function timeAgo(secsAgo) {
+  if (secsAgo < 60)  return secsAgo + "s ago";
+  if (secsAgo < 3600) return Math.floor(secsAgo / 60) + "m ago";
+  return (secsAgo / 3600).toFixed(1) + "h ago";
+}
+
+function sizeTag(usd) {
+  if (usd >= 50000) return '<span class="size-tag whale">Whale</span>';
+  if (usd >= 10000) return '<span class="size-tag mid">Mid</span>';
+  return '<span class="size-tag small">Small</span>';
+}
+
+function sizeClass(usd) {
+  if (usd >= 50000) return "whale";
+  if (usd >= 10000) return "mid";
+  return "small";
+}
+
+function walletColor(idx) {
+  return WALLETS[idx % WALLETS.length];
+}
+
+// ── Build feed row ────────────────────────────────────────────────────────────
+
+function buildRow(item, flash = false) {
+  const w = WALLETS[item.walletIdx];
+  const tokenAddr = TOKENS[item.tokenIdx];
+  const initial = w.addr.slice(0, 2).toUpperCase();
+  const signal = `🐋 Smart Money Alert\nWallet: ${w.addr}\nToken: ${tokenAddr}\nAmount: ${fmtAmt(item.amt)}\nValue: ${fmtUsd(item.usd)}\nTime: ${timeAgo(item.secsAgo)}`;
+
+  const tr = document.createElement("tr");
+  tr.dataset.size = sizeClass(item.usd);
+  if (flash) tr.classList.add("flash-new");
+
+  tr.innerHTML = `
+    <td class="time-cell">${timeAgo(item.secsAgo)}</td>
+    <td>
+      <div class="wallet-cell">
+        <div class="wallet-avatar" style="background:${w.bg};color:${w.color}">${initial}</div>
+        <a class="wallet-addr" href="https://solscan.io/account/${w.addr}" target="_blank" rel="noopener">${short(w.addr)}</a>
+      </div>
+    </td>
+    <td>
+      <a class="token-addr" href="https://birdeye.so/token/${tokenAddr}" target="_blank" rel="noopener">${short(tokenAddr)}</a>
+    </td>
+    <td>${sizeTag(item.usd)}</td>
+    <td class="amount-cell">
+      <div class="amount-main">${fmtUsd(item.usd)}</div>
+      <div class="amount-sub">${fmtAmt(item.amt)} tokens</div>
+    </td>
+    <td style="text-align:right">
+      <button class="copy-btn" data-signal="${encodeURIComponent(signal)}">Copy</button>
+    </td>
+  `;
+
+  tr.querySelector(".copy-btn").addEventListener("click", function() {
+    navigator.clipboard.writeText(decodeURIComponent(this.dataset.signal)).catch(() => {});
+    this.textContent = "✓ Copied";
+    this.classList.add("copied");
+    showToast();
+    setTimeout(() => { this.textContent = "Copy"; this.classList.remove("copied"); }, 2000);
+  });
+
+  return tr;
+}
+
+// ── Render feed ──────────────────────────────────────────────────────────────
+
+let feedData = [...FEED_DATA];
+let activeFilter = "all";
+let activeTokenFilter = null;
+
+function renderFeed() {
+  const tbody = document.getElementById("feed-body");
+  let filtered = activeFilter === "all" ? feedData : feedData.filter(d => sizeClass(d.usd) === activeFilter);
+  if (activeTokenFilter !== null) filtered = filtered.filter(d => d.tokenIdx === activeTokenFilter);
+  tbody.innerHTML = "";
+  filtered.forEach(item => tbody.appendChild(buildRow(item)));
+  document.getElementById("feed-count").textContent = filtered.length + " signals"
+    + (activeTokenFilter !== null ? ` · token: ${short(TOKENS[activeTokenFilter])}` : "");
+}
+
+// ── Filters ──────────────────────────────────────────────────────────────────
+
+document.querySelectorAll(".filter-tab").forEach(btn => {
+  btn.addEventListener("click", function() {
+    document.querySelectorAll(".filter-tab").forEach(b => b.classList.remove("active"));
+    this.classList.add("active");
+    activeFilter = this.dataset.filter;
+    renderFeed();
+  });
+});
+
+// ── Token Leaderboard ─────────────────────────────────────────────────────────
+
+function buildLeaderboard() {
+  const tally = {};
+  feedData.forEach(d => {
+    const t = TOKENS[d.tokenIdx];
+    if (!tally[t]) tally[t] = { buys: 0, vol: 0 };
+    tally[t].buys++;
+    tally[t].vol += d.usd;
+  });
+
+  const sorted = Object.entries(tally).sort((a, b) => b[1].vol - a[1].vol).slice(0, 6);
+  const maxVol = sorted[0][1].vol;
+
+  const colors = ["#00d4ff","#00ff88","#b78bfa","#ffaa00","#ff6eb4","#4aeadc"];
+  const emojis = ["◈","◉","◎","◆","◇","○"];
+
+  const el = document.getElementById("token-leaderboard");
+  el.innerHTML = sorted.map(([addr, stats], i) => `
+    <div class="token-item">
+      <span class="token-rank">#${i + 1}</span>
+      <div class="token-icon" style="background:rgba(${hexToRgb(colors[i])},0.15);color:${colors[i]}">${emojis[i]}</div>
+      <div class="token-info">
+        <div class="token-name">
+          <a href="https://birdeye.so/token/${addr}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${short(addr)}</a>
+        </div>
+        <div class="bar-wrap"><div class="bar-fill" style="width:${Math.round(stats.vol / maxVol * 100)}%"></div></div>
+        <div class="token-buys">${stats.buys} buys</div>
+      </div>
+      <div class="token-vol" style="color:${colors[i]}">${fmtUsd(stats.vol)}</div>
+    </div>
+  `).join("");
+}
+
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return `${r},${g},${b}`;
+}
+
+// ── Wallet Performance ────────────────────────────────────────────────────────
+
+function buildWalletPerf() {
+  const stats = WALLETS.map((w, i) => {
+    const buys = feedData.filter(d => d.walletIdx === i);
+    const vol = buys.reduce((s, d) => s + d.usd, 0);
+    return { w, buys: buys.length, vol };
+  }).sort((a, b) => b.vol - a.vol);
+
+  const el = document.getElementById("wallet-perf");
+  el.innerHTML = stats.map(({ w, buys, vol }) => {
+    const heat = vol >= 100000 ? "hot" : vol >= 30000 ? "warm" : "cold";
+    const heatLabel = heat.charAt(0).toUpperCase() + heat.slice(1);
+    const initial = w.addr.slice(0, 2).toUpperCase();
+    return `
+      <div class="wallet-row">
+        <div class="wallet-avatar" style="background:${w.bg};color:${w.color}">${initial}</div>
+        <div class="wallet-row-info">
+          <a class="wallet-addr" href="https://solscan.io/account/${w.addr}" target="_blank" rel="noopener">${short(w.addr)}</a>
+          <div class="wallet-row-stats">${buys} buys · ${fmtUsd(vol)}</div>
+        </div>
+        <span class="heat-badge ${heat}">${heatLabel}</span>
+      </div>
+    `;
+  }).join("");
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+
+let toastTimer;
+function showToast() {
+  const t = document.getElementById("toast");
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 2500);
+}
+
+// ── Auto inject new row ───────────────────────────────────────────────────────
+
+const NEW_SIGNALS = [
+  { walletIdx: 2, tokenIdx: 0, amt: 1700000, usd: 99060  },
+  { walletIdx: 5, tokenIdx: 1, amt: 430000,  usd: 29470  },
+  { walletIdx: 8, tokenIdx: 0, amt: 6200000, usd: 361480 },
+  { walletIdx: 1, tokenIdx: 4, amt: 88000,   usd: 8810   },
+  { walletIdx: 0, tokenIdx: 2, amt: 540000,  usd: 32270  },
+];
+
+let newSignalIdx = 0;
+let totalBuys = 1247;
+let totalVol  = 2410000;
+
+function injectSignal() {
+  const base = NEW_SIGNALS[newSignalIdx % NEW_SIGNALS.length];
+  newSignalIdx++;
+
+  const item = { ...base, secsAgo: Math.floor(Math.random() * 15) + 3 };
+  feedData.unshift(item);
+  if (feedData.length > 60) feedData.pop();
+
+  // Update times
+  feedData.forEach(d => d.secsAgo += 8);
+
+  totalBuys++;
+  totalVol += item.usd;
+
+  document.getElementById("kpi-total").textContent = totalBuys.toLocaleString();
+  document.getElementById("kpi-vol").textContent   = fmtUsd(totalVol);
+
+  renderFeed();
+
+  // Flash the first row
+  const firstRow = document.querySelector("#feed-body tr");
+  if (firstRow && activeFilter === "all") {
+    firstRow.classList.remove("flash-new");
+    void firstRow.offsetWidth;
+    firstRow.classList.add("flash-new");
+  }
+
+  buildLeaderboard();
+  buildWalletPerf();
+  renderHeatmap();
+}
+
+// ── Correlation Heatmap ───────────────────────────────────────────────────────
+
+function computeMatrix() {
+  const m = {};
+  feedData.forEach(d => {
+    if (!m[d.tokenIdx]) m[d.tokenIdx] = {};
+    if (!m[d.tokenIdx][d.walletIdx]) m[d.tokenIdx][d.walletIdx] = { count: 0, usd: 0 };
+    m[d.tokenIdx][d.walletIdx].count++;
+    m[d.tokenIdx][d.walletIdx].usd += d.usd;
+  });
+  return m;
+}
+
+function getTopTokenIdxs() {
+  const tally = {};
+  feedData.forEach(d => { tally[d.tokenIdx] = (tally[d.tokenIdx] || 0) + 1; });
+  return Object.entries(tally).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([idx]) => Number(idx));
+}
+
+function renderHeatmap() {
+  const matrix = computeMatrix();
+  const topTokens = getTopTokenIdxs();
+  const grid = document.getElementById("heatmap-grid");
+
+  // Conviction banner: token bought by 3+ wallets
+  const convTokens = topTokens.filter(t => matrix[t] && Object.keys(matrix[t]).length >= 3);
+  const banner = document.getElementById("conviction-banner");
+  if (convTokens.length > 0) {
+    const t = convTokens[0];
+    const wCount = Object.keys(matrix[t]).length;
+    const totalUsd = Object.values(matrix[t]).reduce((s, v) => s + v.usd, 0);
+    document.getElementById("conviction-msg").textContent =
+      `High conviction: ${wCount} wallets buying ${short(TOKENS[t])} · combined ${fmtUsd(totalUsd)} — potential breakout`;
+    banner.style.display = "flex";
+  } else {
+    banner.style.display = "none";
+  }
+
+  let html = "<div></div>"; // corner
+
+  // Wallet header row
+  WALLETS.forEach((w, i) => {
+    const init = w.addr.slice(0, 2).toUpperCase();
+    html += `<div class="hm-wallet-header" title="${w.addr}">
+      <div class="hm-wallet-avatar" style="background:${w.bg};color:${w.color}">${init}</div>
+      <div class="hm-wallet-lbl">${w.addr.slice(0,3)}</div>
+    </div>`;
+  });
+
+  // Token rows
+  topTokens.forEach(tIdx => {
+    const tokenAddr = TOKENS[tIdx];
+    const isActive = activeTokenFilter === tIdx;
+    const walletCount = matrix[tIdx] ? Object.keys(matrix[tIdx]).length : 0;
+    const star = walletCount >= 3 ? " ★" : "";
+
+    html += `<div class="hm-token-label ${isActive ? "active-filter" : ""}" data-tidx="${tIdx}" title="Click to filter live feed to this token">
+      ${short(tokenAddr)}${star}
+    </div>`;
+
+    WALLETS.forEach((w, wIdx) => {
+      const cell = matrix[tIdx] && matrix[tIdx][wIdx];
+      const count = cell ? cell.count : 0;
+      const usd   = cell ? cell.usd : 0;
+      const intensity = count === 0 ? 0 : Math.min(count / 5, 1);
+      const alpha = (0.06 + intensity * 0.74).toFixed(2);
+      const textOp = intensity > 0.35 ? "1" : "0.35";
+      const highlight = count >= 3 ? ";border:1px solid rgba(255,170,0,0.55)" : "";
+      const tip = count > 0
+        ? `${w.addr.slice(0,6)}…${w.addr.slice(-4)}<br>${count} buy${count>1?"s":""} · ${fmtUsd(usd)}`
+        : `${w.addr.slice(0,6)}…${w.addr.slice(-4)}<br>No buys`;
+
+      html += `<div class="hm-cell" style="background:rgba(0,212,255,${alpha});color:rgba(255,255,255,${textOp})${highlight}">
+        ${count > 0 ? count : `<span style="color:rgba(255,255,255,0.12)">—</span>`}
+        <div class="hm-tooltip">${tip}</div>
+      </div>`;
+    });
+  });
+
+  grid.innerHTML = html;
+
+  // Token label click → filter
+  grid.querySelectorAll(".hm-token-label").forEach(el => {
+    el.addEventListener("click", function() {
+      const tIdx = Number(this.dataset.tidx);
+      activeTokenFilter = (activeTokenFilter === tIdx) ? null : tIdx;
+      document.getElementById("corr-clear").style.display = activeTokenFilter !== null ? "inline-flex" : "none";
+      renderFeed();
+      renderHeatmap();
+    });
+  });
+}
+
+document.getElementById("corr-clear").addEventListener("click", () => {
+  activeTokenFilter = null;
+  document.getElementById("corr-clear").style.display = "none";
+  renderFeed();
+  renderHeatmap();
+});
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+
+renderFeed();
+buildLeaderboard();
+buildWalletPerf();
+renderHeatmap();
+
+setInterval(injectSignal, 8000);
+
+// Nav buttons (visual only)
+document.querySelectorAll("header nav button").forEach(btn => {
+  btn.addEventListener("click", function() {
+    document.querySelectorAll("header nav button").forEach(b => b.classList.remove("active"));
+    this.classList.add("active");
+  });
+});
+</script>
+</body>
+</html>
