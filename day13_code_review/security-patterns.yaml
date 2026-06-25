@@ -1,0 +1,5 @@
+patterns:
+  - rule_name: internal_api_key
+    substrings: ["sk-proj-", "AKIA"]
+    reminder: "Hardcoded API key prefix. Load credentials from the secret manager."
+ 

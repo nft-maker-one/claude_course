@@ -1,0 +1,21 @@
+{
+    "name": "your_name",
+    "description": "My personal plugin marketplace",
+    "owner": {
+      "name": "your_name",
+      "email": "your_email"
+    },
+    "plugins": [
+      {
+        "name": "image-toolkit",
+        "description": "Image processing — crop, rotate, and grayscale conversion",
+        "author": { "name": "your_name" },
+        "category": "development",
+        "source": {
+          "source": "github",
+          "repo": "your_repo"
+        },
+        "homepage": "https://github.com/your_repo"
+      }
+    ]
+  }
