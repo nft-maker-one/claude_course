@@ -98,8 +98,8 @@ graph TD
     "name": "your_name",
     "email": "123456@gmail.com"
   },
-  "homepage": "https://github.com/nft-maker-one/image-toolkit",
-  "repository": "https://github.com/nft-maker-one/image-toolkit",
+  "homepage": "https://github.com/your_repo/image-toolkit",
+  "repository": "https://github.com/your_repo/image-toolkit",
   "license": "MIT",
   "keywords": ["image", "processing", "crop", "rotate", "grayscale"]
 }
@@ -265,14 +265,14 @@ Marketplace 本身不包含任何插件代码，只做索引——"这个插件�
 
 ```mermaid
 graph TB
-    subgraph "Marketplace 仓库 (nft-maker-one/jerry-plugins)"
+    subgraph "Marketplace 仓库 (your_repo/my-plugins)"
         MJ[".claude-plugin/marketplace.json"]
     end
 
     subgraph "Plugin 仓库们 (各自独立)"
-        P1["nft-maker-one/image-toolkit"]
-        P2["nft-maker-one/video-toolkit"]
-        P3["nft-maker-one/audio-toolkit"]
+        P1["your_repo/image-toolkit"]
+        P2["your_repo/video-toolkit"]
+        P3["your_repo/audio-toolkit"]
     end
 
     MJ -->|"source.repo 指向"| P1
@@ -280,7 +280,7 @@ graph TB
     MJ -->|"source.repo 指向"| P3
 
     U["用户终端"] -->|"1. marketplace add"| MJ
-    U -->|"2. plugin install image-toolkit@jerry-plugins"| P1
+    U -->|"2. plugin install image-toolkit@your-plugins"| P1
 
     style MJ fill:#f9e79f
     style U fill:#aed6f1
@@ -293,8 +293,8 @@ graph TB
 这个仓库和你的 Plugin 仓库是**完全独立的两个 Git 仓库**。
 
 ```bash
-mkdir jerry-plugins
-cd jerry-plugins
+mkdir your-plugins
+cd your-plugins
 git init
 mkdir .claude-plugin
 ```

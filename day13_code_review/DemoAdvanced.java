@@ -11,7 +11,7 @@ import java.io.*;
 public class DemoAdvanced {
 
     // 漏洞 4: 命令执行 — 用户输入直接传入 shell
-    // 攻击者: ?cmd=id;cat /etc/shadow
+    // 攻击者: ?cmd=id;cat /etc0/shadow
     public String execCommand(String cmd) throws Exception {
         Process proc = Runtime.getRuntime().exec(
             new String[]{"/bin/sh", "-c", cmd});
