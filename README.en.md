@@ -2,6 +2,21 @@
 
 A practical tutorial repository for system-level development with Claude Code.
 
+## Follow Us
+
+This tutorial is continuously updated. Follow our channel for the latest content — likes, bookmarks, and shares are welcome!
+
+<table>
+  <tr>
+    <td align="center"><b>Bilibili · 狂飙web3</b></td>
+    <td align="center"><b>WeChat Official Account · 狂飙web3</b></td>
+  </tr>
+  <tr>
+    <td><img src="bilibili.png" width="280"/></td>
+    <td><img src="wx_account.png" width="280"/></td>
+  </tr>
+</table>
+
 ## Project Overview
 
 This repository is a comprehensive practical tutorial series for Claude Code, covering a complete knowledge system from installation and configuration to advanced extensions. Organized in a modular structure, it includes 13 thematic chapters, each focusing on a distinct core functionality domain.
@@ -117,15 +132,6 @@ python server.py
 
 3. **Advanced Stage** (day10-day13)
    - Master scheduled tasks, caching optimization, task orchestration, and code review
-
-## Follow Us
-
-This tutorial is continuously updated. Follow our channel for the latest content:
-
-- **Bilibili**: Search「狂飙web3」
-- **WeChat Official Account**: Search「狂飙web3」
-
-Likes, bookmarks, and shares are welcome!
 
 ## License
 

@@ -5,6 +5,21 @@
 
 Claude Code 系统级开发实战教程仓库
 
+## 关注我们
+
+本教程持续更新，欢迎关注同名频道获取最新内容，点赞、收藏、转发支持！
+
+<table>
+  <tr>
+    <td align="center"><b>Bilibili · 狂飙web3</b></td>
+    <td align="center"><b>微信公众号 · 狂飙web3</b></td>
+  </tr>
+  <tr>
+    <td><img src="bilibili.png" width="280"/></td>
+    <td><img src="wx_account.png" width="280"/></td>
+  </tr>
+</table>
+
 ## 项目简介
 
 本仓库是一套完整的 Claude Code 系统级开发实战教程，涵盖从安装配置到高级扩展的完整知识体系。仓库以模块化结构组织，包含 13 个主题章节，每个章节聚焦不同的核心功能域。
@@ -120,15 +135,6 @@ python server.py
 
 3. **实战阶段** (day10-day13)
    - 掌握定时任务、缓存优化、任务编排、代码审查
-
-## 关注我们
-
-本教程持续更新，欢迎关注同名频道获取最新内容：
-
-- **Bilibili**：搜索「狂飙web3」
-- **微信公众号**：搜索「狂飙web3」
-
-欢迎点赞、收藏、转发支持！
 
 ## 许可证
 
