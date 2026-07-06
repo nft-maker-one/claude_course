@@ -118,6 +118,15 @@ python server.py
 3. **Advanced Stage** (day10-day13)
    - Master scheduled tasks, caching optimization, task orchestration, and code review
 
+## Follow Us
+
+This tutorial is continuously updated. Follow our channel for the latest content:
+
+- **Bilibili**: Search「狂飙web3」
+- **WeChat Official Account**: Search「狂飙web3」
+
+Likes, bookmarks, and shares are welcome!
+
 ## License
 
 MIT License — see the LICENSE file in each subproject directory.
