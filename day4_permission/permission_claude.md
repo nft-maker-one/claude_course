@@ -1,5 +1,7 @@
 # 驾驭“推理能力”的紧箍咒 —— 权限管理与 dontAsk 范式
 
+[video link](https://www.bilibili.com/video/BV1sXRuBgERr?spm_id_from=333.788.videopod.sections&vd_source=b9c7291878ac8d2fc1dd2ad9b42cde5a)
+
 ## 导言
 
 在 Copilot 时代，AI 只是你的笔，写错代码最多是引入一个 Bug，排查修正即可；但在 Claude Code 等智能体（Agent）时代，AI 是你的手和眼，它具备极高的自主性——能调用 Bash、操作文件系统、启停服务甚至执行脚本。

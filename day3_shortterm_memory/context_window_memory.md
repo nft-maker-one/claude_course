@@ -1,5 +1,7 @@
 # 斩断冗余，重塑上下文：短期记忆的链表重构与 Compact 机制
 
+[video link](https://www.bilibili.com/video/BV1SKovBsEgi?spm_id_from=333.788.videopod.sections&vd_source=b9c7291878ac8d2fc1dd2ad9b42cde5a)
+
 ## 导言：掌控 Agent 的注意力边界
 
 在上一节中，我们拆解了 Claude Code 是如何利用底层的 JSONL 文件和 SessionId 实现跨分支状态管理的。但对于高并发业务场景的开发者而言，我们面临着一个更现实的性能瓶颈：**大语言模型（LLM）的上下文窗口（Context Window）不仅昂贵，而且注意力是会衰减的。**

@@ -1,5 +1,8 @@
 # 记忆溯源与状态分叉：**深入解析 Agent 的 Git 级记忆引擎**
 
+[video link](https://www.bilibili.com/video/BV1QeoMBnEJ4?spm_id_from=333.788.videopod.sections&vd_source=b9c7291878ac8d2fc1dd2ad9b42cde5a)
+
+
 ## 导言：告别失忆，掌控智能体的状态机
 
 在构建高并发系统或微服务架构时，状态机（State Machine）和事件溯源（Event Sourcing）是我们解决复杂交互的核心。同样，对于一个高度自主的 AI Agent 而言，要想在错综复杂的代码库中执行长线任务（如重构支付链路、排查内存泄漏），就必须拥有稳定、可回溯的记忆系统。

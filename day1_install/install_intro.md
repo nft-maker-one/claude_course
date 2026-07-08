@@ -1,4 +1,5 @@
 # Claude Code 的下载安装与界面工具深度解析**
+[video link](https://www.bilibili.com/video/BV1K7dkBTEju/?spm_id_from=333.1387.collection.video_card.click&vd_source=b9c7291878ac8d2fc1dd2ad9b42cde5a)  
 
 ### 导言：从代码补全到系统接管
 

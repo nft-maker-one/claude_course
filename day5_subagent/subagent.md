@@ -1,5 +1,7 @@
 # 突破上下文瓶颈：Subagents workflow与 Context 物理隔离机制
 
+[video link](https://www.bilibili.com/video/BV13pRyBUEiC?spm_id_from=333.788.videopod.sections&vd_source=b9c7291878ac8d2fc1dd2ad9b42cde5a)
+
 ## 导言：打破单线程魔咒，走向多智能体协同
 
 在构建高并发系统时，我们绝不会让主线程（Main Thread）去阻塞等待海量的磁盘 I/O 或网络请求。通常的解法是将重度任务丢给 Worker Pool 异步处理。然而，在当前的 AI 开发中，很多开发者依然把主智能体（Main Agent）当成单线程在跑——让它去遍历上百个文件、阅读冗长的构建报错日志。
