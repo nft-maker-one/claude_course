@@ -1,5 +1,7 @@
 # Claude Code Hook：驾驭高自主性 AI 的Harness缰绳
 
+[video link](https://www.bilibili.com/video/BV1nQLJ6PEzw?vd_source=b9c7291878ac8d2fc1dd2ad9b42cde5a&spm_id_from=333.788.videopod.sections)
+
 ## 导言
 
 时代的风向已经变了。当下的开发者面对 Skill、Agent、MCP 等新范式时，不再焦虑“AI 会不会写代码”，而是陷入了更深的恐慌：“如何控制一匹每秒执行数十条指令、具备高自主性的 AI 战马，确保它不失控？”

@@ -43,19 +43,23 @@ This repository is a comprehensive practical tutorial series for Claude Code, co
 
 ### Core Tutorial Documents
 
-- **day1_install/install_intro.md** - Deep dive into downloading, installing, and interface tools of Claude Code
-- **day2_longterm_memory/longterm_memory.md** - Git-level memory engine and state forking
-- **day3_shortterm_memory/context_window_memory.md** - Short-term memory linked list reconstruction and Compact mechanism
-- **day4_permission/permission_claude.md** - Permission management and dontAsk paradigm
-- **day5_subagent/subagent.md** - Subagent context physical isolation mechanism
-- **day6_skill/skill_usage.md** - From beginner to advanced Skills system development
-- **day7_mcp/model_context_protocol.md** - MCP protocol reshaping Agent perception neural networks
-- **day8_hook/hook.md** - Using Hooks as harness reins to control highly autonomous AI
-- **day9_channel/channel.md** - Channels remote control architecture and underlying implementation
-- **day10_schedule/schedule.md** - Scheduled tasks and cloud scheduling mechanisms
-- **day11_cache/cache.md** - Prompt caching mechanisms and optimization strategies
-- **day12_task_schedule/task_schedule.md** - Goal and Workflow task orchestration
-- **day13_code_review/plugin_marketplace_guide.md** - Deep analysis of Plugins and Marketplace
+All documents are available in both Chinese and English (`.md` Chinese / `.en.md` English):
+
+| Chapter | Chinese | English |
+|---------|---------|---------|
+| day1 | [install_intro.md](day1_install/install_intro.md) | [install_intro.en.md](day1_install/install_intro.en.md) |
+| day2 | [longterm_memory.md](day2_longterm_memory/longterm_memory.md) | [longterm_memory.en.md](day2_longterm_memory/longterm_memory.en.md) |
+| day3 | [context_window_memory.md](day3_shortterm_memory/context_window_memory.md) | [context_window_memory.en.md](day3_shortterm_memory/context_window_memory.en.md) |
+| day4 | [permission_claude.md](day4_permission/permission_claude.md) | [permission_claude.en.md](day4_permission/permission_claude.en.md) |
+| day5 | [subagent.md](day5_subagent/subagent.md) | [subagent.en.md](day5_subagent/subagent.en.md) |
+| day6 | [skill_usage.md](day6_skill/skill_usage.md) | [skill_usage.en.md](day6_skill/skill_usage.en.md) |
+| day7 | [model_context_protocol.md](day7_mcp/model_context_protocol.md) | [model_context_protocol.en.md](day7_mcp/model_context_protocol.en.md) |
+| day8 | [hook.md](day8_hook/hook.md) | [hook.en.md](day8_hook/hook.en.md) |
+| day9 | [channel.md](day9_channel/channel.md) | [channel.en.md](day9_channel/channel.en.md) |
+| day10 | [schedule.md](day10_schedule/schedule.md) | [schedule.en.md](day10_schedule/schedule.en.md) |
+| day11 | [cache.md](day11_cache/cache.md) | [cache.en.md](day11_cache/cache.en.md) |
+| day12 | [task_schedule.md](day12_task_schedule/task_schedule.md) | [task_schedule.en.md](day12_task_schedule/task_schedule.en.md) |
+| day13 | [plugin_marketplace_guide.md](day13_code_review/plugin_marketplace_guide.md) | [plugin_marketplace_guide.en.md](day13_code_review/plugin_marketplace_guide.en.md) |
 
 ### Practical Projects
 

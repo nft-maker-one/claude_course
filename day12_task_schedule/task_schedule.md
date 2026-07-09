@@ -1,5 +1,7 @@
 # Claude 打工团队，行业垄断的 Goal 和集团巨无霸 workflow
 
+[video link](https://www.bilibili.com/video/BV1p9EJ6CEuq?vd_source=b9c7291878ac8d2fc1dd2ad9b42cde5a&spm_id_from=333.788.videopod.sections)
+
 过去的开发者盯着代码补全的光标，现在的开发者盯着终端里狂飙的 Agent 日志。当 AI 从“被动响应”转向“高度自主”时，如何保证它在复杂工程中不偏离轨道、不陷入死循环，成为了核心的技术命题。
 
 从单一脚本的修改到重构整个微服务架构，AI 的调度逻辑必须从线性的“问答”进化为复杂的图灵完备系统。Claude Code 提供了两种强大的调度范式：用于单任务闭环的局部的状态机收敛（`/goal`），以及用于大规模重构的分布式 DAG 编排（`workflows`）。

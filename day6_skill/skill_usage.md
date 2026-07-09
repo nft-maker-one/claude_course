@@ -1,5 +1,7 @@
 # 掌握 Claude Code Skills：从代码补全迈向智能体开发
 
+[video link](https://www.bilibili.com/video/BV1hoRQBqE4z/?vd_source=b9c7291878ac8d2fc1dd2ad9b42cde5a)
+
 ## 导言
 
 开发者正站在从“代码补全（Copilot）”向“智能体（Agent）”过渡的关键节点。在高度自主的开发范式下，核心挑战已不再是生成代码片段，而是如何通过结构化的 Skill（技能）体系，确立 AI 的行为边界与推理逻辑。在生产级环境中，我们追求的不是“AI 偶尔能写对”，而是通过精确的配置实现“AI 始终受控”。本章将深入拆解 Claude Code 的 Skill 机制，探讨如何将自然语言指令转化为具备工业级确定性的自动化工具。

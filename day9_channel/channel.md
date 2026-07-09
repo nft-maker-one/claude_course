@@ -1,5 +1,7 @@
 # 别只知道 OpenClaw， Claude Code 其实也一点不输：Claude Code Channels 远控架构与底层全解
 
+[video link](https://www.bilibili.com/video/BV1WJLz6oEMR?vd_source=b9c7291878ac8d2fc1dd2ad9b42cde5a&spm_id_from=333.788.videopod.sections)
+
 ## 导言
 当下的 AI 研发圈，主打“远程控制”的 OpenClaw 风头正劲，大有垄断跨端协同话语权之势。然而，许多开发者陷入了一个认知盲区：只知 OpenClaw，却对 Claude Code 潜藏的远控爆发力一无所知。
 

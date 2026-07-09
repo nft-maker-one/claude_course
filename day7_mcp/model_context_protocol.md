@@ -1,5 +1,7 @@
 # 突破上下文结界：使用 MCP 协议重塑 Agent 感知神经
 
+[video link](https://www.bilibili.com/video/BV1nA5u6AEnS?vd_source=b9c7291878ac8d2fc1dd2ad9b42cde5a&spm_id_from=333.788.videopod.sections)
+
 ## 导言：从代码补全到系统级自治控制
 
 随着各家大模型的不断迭代，当下大模型的推理能力和知识深度已经达到深不可测的程度，很少有人再从单纯的能力层面对 vibe coding 的开发产生疑问。但是让大模型具备强推理能力只是第一步，构建可靠的“感知与执行神经”才是决定 Agent 架构成败的工程底座。Claude Code 引入了 MCP（Model Context Protocol，模型上下文协议），这正是为解决外部工具调用确定性而生的开源底层标准。本文将剥离表层的 API 调用，深入拆解 MCP 的底层流转机制，带你掌握构建企业级高可控 Agent 的核心心法。

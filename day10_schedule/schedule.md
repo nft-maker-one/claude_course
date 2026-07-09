@@ -1,5 +1,7 @@
 # Agent 世界的柯罗诺斯：Claude Code 定时任务与云端调度机制解析
 
+[video link](https://www.bilibili.com/video/BV1AmVT6hEW6?vd_source=b9c7291878ac8d2fc1dd2ad9b42cde5a&spm_id_from=333.788.videopod.sections)
+
 **导言**
 在向“Agent 时代”跃迁的当下，高自主性 AI 的核心特征在于**异步性与环境感知（Asynchrony & Context-Awareness）**。真正的智能体不需要人类频繁的“鞭打”来驱动，它们应当能够在后台驻留、轮询状态、并在满足特定条件时主动介入开发流。
 

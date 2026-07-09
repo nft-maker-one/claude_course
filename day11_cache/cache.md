@@ -1,5 +1,7 @@
 # Claude 的cache工程：提示词缓存机制和千种优化策略
 
+[video link](https://www.bilibili.com/video/BV1crVW66E8A?vd_source=b9c7291878ac8d2fc1dd2ad9b42cde5a&spm_id_from=333.788.videopod.sections)
+
 ## 导言
 
 在智能体时代， 相信最大的痛点就是疯狂燃烧的 token。本指南将为你彻底拆解 Claude Code 的 Prompt Caching（提示词缓存）底层机制，并带你通过 Solana 链上聪明钱监控系统的实战，完成从“代码补全”到“架构级系统生成”的跃迁，让我们一起把我们的 token 留住。

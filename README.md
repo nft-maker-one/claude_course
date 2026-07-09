@@ -30,7 +30,7 @@ Claude Code 系统级开发实战教程仓库
 |------|------|----------|
 | day1 | 安装与界面 | Claude CLI 安装、VS Code 扩展、权限模式、模型切换 |
 | day2 | 长期记忆 | JSONL 持久化、Git 锚点、Auto Memory、Rewind 与 Fork |
-| 短期记忆 | 上下文窗口管理、parentUuid 链表、Compact 机制 |
+| day3 | 短期记忆 | 上下文窗口管理、parentUuid 链表、Compact 机制 |
 | day4 | 权限管理 | 权限等级、dontAsk 模式、工作空间边界 |
 | day5 | Subagent | 上下文物理隔离、并发 Fan-out/Fan-in、权限下放 |
 | day6 | Skills | 技能系统编写、Binance Skills Hub、MCP 集成 |
@@ -46,19 +46,23 @@ Claude Code 系统级开发实战教程仓库
 
 ### 核心教程文档
 
-- **day1_install/install_intro.md** - Claude Code 下载安装与界面工具深度解析
-- **day2_longterm_memory/longterm_memory.md** - Git 级记忆引擎与状态分叉
-- **day3_shortterm_memory/context_window_memory.md** - 短期记忆链表重构与 Compact 机制
-- **day4_permission/permission_claude.md** - 权限管理与 dontAsk 范式
-- **day5_subagent/subagent.md** - Subagent 上下文物理隔离机制
-- **day6_skill/skill_usage.md** - Skills 系统从入门到实战
-- **day7_mcp/model_context_protocol.md** - MCP 协议重塑 Agent 感知神经
-- **day8_hook/hook.md** - Hook 驾驭高自主性 AI 的 harness 缰绳
-- **day9_channel/channel.md** - Channels 远控架构与底层全解
-- **day10_schedule/schedule.md** - 定时任务与云端调度机制
-- **day11_cache/cache.md** - 提示词缓存机制和优化策略
-- **day12_task_schedule/task_schedule.md** - Goal 和 Workflow 任务编排
-- **day13_code_review/plugin_marketplace_guide.md** - Plugin 与 Marketplace 深度拆解
+每篇文档均提供中英双语版本（`.md` 中文 / `.en.md` 英文）：
+
+| 章节 | 中文文档 | 英文文档 |
+|------|----------|----------|
+| day1 | [install_intro.md](day1_install/install_intro.md) | [install_intro.en.md](day1_install/install_intro.en.md) |
+| day2 | [longterm_memory.md](day2_longterm_memory/longterm_memory.md) | [longterm_memory.en.md](day2_longterm_memory/longterm_memory.en.md) |
+| day3 | [context_window_memory.md](day3_shortterm_memory/context_window_memory.md) | [context_window_memory.en.md](day3_shortterm_memory/context_window_memory.en.md) |
+| day4 | [permission_claude.md](day4_permission/permission_claude.md) | [permission_claude.en.md](day4_permission/permission_claude.en.md) |
+| day5 | [subagent.md](day5_subagent/subagent.md) | [subagent.en.md](day5_subagent/subagent.en.md) |
+| day6 | [skill_usage.md](day6_skill/skill_usage.md) | [skill_usage.en.md](day6_skill/skill_usage.en.md) |
+| day7 | [model_context_protocol.md](day7_mcp/model_context_protocol.md) | [model_context_protocol.en.md](day7_mcp/model_context_protocol.en.md) |
+| day8 | [hook.md](day8_hook/hook.md) | [hook.en.md](day8_hook/hook.en.md) |
+| day9 | [channel.md](day9_channel/channel.md) | [channel.en.md](day9_channel/channel.en.md) |
+| day10 | [schedule.md](day10_schedule/schedule.md) | [schedule.en.md](day10_schedule/schedule.en.md) |
+| day11 | [cache.md](day11_cache/cache.md) | [cache.en.md](day11_cache/cache.en.md) |
+| day12 | [task_schedule.md](day12_task_schedule/task_schedule.md) | [task_schedule.en.md](day12_task_schedule/task_schedule.en.md) |
+| day13 | [plugin_marketplace_guide.md](day13_code_review/plugin_marketplace_guide.md) | [plugin_marketplace_guide.en.md](day13_code_review/plugin_marketplace_guide.en.md) |
 
 ### 实践项目
 

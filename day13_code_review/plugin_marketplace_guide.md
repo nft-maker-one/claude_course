@@ -1,5 +1,7 @@
 # Claude Code Plugin 与 Marketplace 深度拆解, 团队级别的提效大杀器
 
+[video link](https://www.bilibili.com/video/BV1Ti7a6SEp7?vd_source=b9c7291878ac8d2fc1dd2ad9b42cde5a&spm_id_from=333.788.videopod.sections)
+
 ## 导言
 
 Skill 是一把刀，Hooks 是一道门禁，Agent 是一个助手——它们各自解决单点问题。但真正的工程需求是：**我需要把刀、门禁和助手打包成一个标准化的工具箱，让团队里每个人开箱即用。**
